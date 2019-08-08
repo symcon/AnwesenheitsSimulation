@@ -27,8 +27,9 @@ Ist auch innerhalb dieser 30 Tage kein gültiger Tagesdatensatz vorhanden, ist k
 
 ### 3. Software-Installation
 
-Über das Modul-Control folgende URL hinzufügen.  
-`git://github.com/symcon/SymconMisc.git`  
+* Über den Modul Store das Modul Anwesenheits-Simulation installieren.
+* Alternativ über das Modul Control folgende URL hinzufügen:
+´https://github.com/symcon/AnwesenheitsSimulation`  
 
 ### 4. Einrichten der Instanzen in IP-Symcon
 
