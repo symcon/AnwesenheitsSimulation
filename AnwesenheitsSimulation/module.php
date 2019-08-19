@@ -8,11 +8,9 @@ class AnwesenheitsSimulation extends IPSModule
 
 		//Properties
 		$this->RegisterPropertyInteger("RequiredSwitchCount", 4);
-		$this->RegisterPropertyInteger("ArchiveControlID", IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}")[0]);
 
 		//Timer
-		$this->RegisterMidnightTimer("UpdateDataTimer", 'if(AS_UpdateData($_IPS[\'TARGET\'])) {AS_UpdateTargets($_IPS[\'TARGET\']);}');
-		$this->RegisterTimer("UpdateTargetsTimer", 0, 'AS_UpdateTargets($_IPS[\'TARGET\']);');
+		$this->RegisterTimer("UpdateTargetsTimer", 0, 'if(AS_UpdateData($_IPS[\'TARGET\'])) {AS_UpdateTargets($_IPS[\'TARGET\']);}');
 
 		//Variables
 		$this->RegisterVariableString("SimulationData", "SimulationData", "");
@@ -36,6 +34,16 @@ class AnwesenheitsSimulation extends IPSModule
 		//Never delete this line!
 		parent::ApplyChanges();
 
+		//deletes unneeded event
+		if (@$this->GetIDForIdent("UpdateDataTimer")) {
+			IPS_DeleteEvent($this->GetIDForIdent("UpdateDataTimer"));
+		} 
+
+		//Setting initial timer interval
+		$tomorow = time() + (24 * 60 * 60);
+		$starttimer = mktime(0, 0, 0, date("m", $tomorow), date("d", $tomorow), date("Y", $tomorow));
+		$this->SetTimerInterval("UpdateTargetsTimer", $starttimer - time());
+	
 	}
 
 	public function SetSimulation(bool $SwitchOn){
@@ -95,16 +103,16 @@ class AnwesenheitsSimulation extends IPSModule
 		$dayStart = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 		$dayDiff = $day * 24 * 3600;
 		$dayData = array();
-
+		$archiveID = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}")[0];
 		//Going through all linked variables
 		foreach($targetIDs as $targetID) {
 
 			//resolve link to linked targetID
 			$linkedTargetID = IPS_GetLink($targetID)['TargetID'];
 
-			if (AC_GetLoggingStatus($this->ReadPropertyInteger("ArchiveControlID"), $linkedTargetID)) {
+			if (AC_GetLoggingStatus($archiveID, $linkedTargetID)) {
 				//Fetch Data for all variables but only one day
-				$values = AC_GetLoggedValues($this->ReadPropertyInteger("ArchiveControlID"), $linkedTargetID, $dayStart - $dayDiff, $dayStart + (24 * 3600) - $dayDiff - 1, 0);
+				$values = AC_GetLoggedValues($archiveID, $linkedTargetID, $dayStart - $dayDiff, $dayStart + (24 * 3600) - $dayDiff - 1, 0);
 				if (sizeof($values) > 0){
 
 					//Transform UnixTimeStamp into human readable value
@@ -285,6 +293,7 @@ class AnwesenheitsSimulation extends IPSModule
 			$this->SetTimerInterval("UpdateTargetsTimer", 0);
 		}
 
+		$this->SetTimerInterval("UpdateTargetsTimer", 1000 * (24 * 60 * 60));
 
 	}
 
@@ -343,34 +352,6 @@ class AnwesenheitsSimulation extends IPSModule
 			 IPS_SetIdent($cid, $ident);
 		 }
 		 return $cid;
-	}
-
-	private function RegisterMidnightTimer($Ident, $Action) {
-
-		//search for already available scripts with proper ident
-		$eid = @IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
-
-		//properly update eventID
-		if($eid === false) {
-			$eid = 0;
-		} else if(IPS_GetEvent($eid)['EventType'] <> 1) {
-			IPS_DeleteEvent($eid);
-			$eid = 0;
-		}
-
-		//we need to create one
-		if ($eid == 0) {
-			$eid = IPS_CreateEvent(1);
-			IPS_SetParent($eid, $this->InstanceID);
-			IPS_SetIdent($eid, $Ident);
-			IPS_SetName($eid, $Ident);
-			IPS_SetHidden($eid, true);
-			IPS_SetEventScript($eid, $Action);
-		}
-
-		IPS_SetEventCyclic($eid, 2, 1, 0, 0, 0, 0);
-		IPS_SetEventCyclicTimeFrom($eid, 0, 0, 1);
-
 	}
 
 }
