@@ -18,9 +18,9 @@ class AnwesenheitsSimulation extends IPSModule
 		//Variables
 		$this->RegisterVariableString("SimulationData", "SimulationData", "");
 		IPS_SetHidden($this->GetIDForIdent("SimulationData"), true);
-		$this->RegisterVariableString("SimulationView", "Simulationsvorschau", "~HTMLBox");
-		$this->RegisterVariableString("SimulationDay", "Simulationsquelle (Tag)", "");
-		$this->RegisterVariableBoolean("Active", "Simulation aktiv", "~Switch");
+		$this->RegisterVariableString("SimulationView", $this->Translate("Simulation preview"), "~HTMLBox");
+		$this->RegisterVariableString("SimulationDay", $this->Translate("Simulations source (Day)"), "");
+		$this->RegisterVariableBoolean("Active", $this->Translate("Simulation active"), "~Switch");
 		$this->EnableAction("Active");
 
 	}
@@ -304,11 +304,11 @@ class AnwesenheitsSimulation extends IPSModule
 
 		$html = "<table style='width: 100%; border-collapse: collapse;'>";
 		$html .= "<tr>";
-		$html .= "<td style='padding: 5px; font-weight: bold;'>Aktor</td>";
-		$html .= "<td style='padding: 5px; font-weight: bold;'>Letzter Wert</td>";
-		$html .= "<td style='padding: 5px; font-weight: bold;'>Seit</td>";
-		$html .= "<td style='padding: 5px; font-weight: bold;'>Nächster Wert</td>";
-		$html .= "<td style='padding: 5px; font-weight: bold;'>Um</td>";
+		$html .= "<td style='padding: 5px; font-weight: bold;'>" . $this->Translate("Actor") . "</td>";
+		$html .= "<td style='padding: 5px; font-weight: bold;'>" . $this->Translate("Last value") . "</td>";
+		$html .= "<td style='padding: 5px; font-weight: bold;'>" . $this->Translate("Since") . "</td>";
+		$html .= "<td style='padding: 5px; font-weight: bold;'>" . $this->Translate("Next value") . "</td>";
+		$html .= "<td style='padding: 5px; font-weight: bold;'>" . $this->Translate("At") . "</td>";
 		$html .= "</tr>";
 
 		foreach ($targetIDs as $targetID) {
