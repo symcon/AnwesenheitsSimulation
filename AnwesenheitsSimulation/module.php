@@ -82,6 +82,19 @@ class AnwesenheitsSimulation extends IPSModule
 
 	}
 
+	private function  GetName($VariableID)
+	{
+
+		$targets = json_decode($this->ReadPropertyString("Targets"), true);
+		foreach($targets as $target) {
+			if (($target["VariableID"] == $VariableID) && (IPS_VariableExists($target["VariableID"]))) {
+				return $target["Name"];
+			}
+		}
+		 
+	}	
+
+
 	public function RequestAction($Ident, $Value) {
 
 		switch($Ident) {
@@ -102,7 +115,7 @@ class AnwesenheitsSimulation extends IPSModule
 		$result = [];
 		foreach($targets as $target) {
 			if (IPS_VariableExists($target["VariableID"])) {
-				$result[] = $target;
+				$result[] = $target["VariableID"];
 			}
 		}
 		return $result;
@@ -117,9 +130,9 @@ class AnwesenheitsSimulation extends IPSModule
 		//Going through all variables
 		foreach($targetIDs as $targetID) {
 
-			if (AC_GetLoggingStatus($this->ReadPropertyInteger("ArchiveControlID"), $targetID["VariableID"])) {
+			if (AC_GetLoggingStatus($this->ReadPropertyInteger("ArchiveControlID"), $targetID)) {
 				//Fetch Data for all variables but only one day
-				$values = AC_GetLoggedValues($this->ReadPropertyInteger("ArchiveControlID"), $targetID["VariableID"], $dayStart - $dayDiff, $dayStart + (24 * 3600) - $dayDiff - 1, 0);
+				$values = AC_GetLoggedValues($this->ReadPropertyInteger("ArchiveControlID"), $targetID, $dayStart - $dayDiff, $dayStart + (24 * 3600) - $dayDiff - 1, 0);
 				if (sizeof($values) > 0){
 
 					//Transform UnixTimeStamp into human readable value
@@ -128,7 +141,7 @@ class AnwesenheitsSimulation extends IPSModule
 					}
 
 					//Reverse array to have the Timestamps ascending
-					$dayData[$targetID["VariableID"]] = array_reverse($values);
+					$dayData[$targetID] = array_reverse($values);
 				}
 			}
 		}
@@ -258,32 +271,32 @@ class AnwesenheitsSimulation extends IPSModule
 
 		foreach ($targetIDs as $targetID){
 
-			$v = IPS_GetVariable($targetID["VariableID"]);
+			$v = IPS_GetVariable($targetID);
 
-			if(!isset($NextSimulationData[$targetID["VariableID"]])) {
-				$this->SendDebug("Update", "Device ".$targetID["VariableID"]." has no simulation data for now!", 0);
+			if(!isset($NextSimulationData[$targetID])) {
+				$this->SendDebug("Update", "Device ".$targetID." has no simulation data for now!", 0);
 			} else {
-				$this->SendDebug("Update", "Device ".$targetID["VariableID"]." shall be ".(int)$NextSimulationData[$targetID["VariableID"]]['currentValue']." since ".$NextSimulationData[$targetID["VariableID"]]['currentTime']." and currently is ".(int)$v["VariableValue"], 0);
+				$this->SendDebug("Update", "Device ".$targetID." shall be ".(int)$NextSimulationData[$targetID]['currentValue']." since ".$NextSimulationData[$targetID]['currentTime']." and currently is ".(int)$v["VariableValue"], 0);
 
 				//Set variableValue, if there is a currentValue and its not the same as already set
-				$targetValue = $NextSimulationData[$targetID["VariableID"]]['currentValue'];
+				$targetValue = $NextSimulationData[$targetID]['currentValue'];
 
 				//Only update if target differs
 				if ($targetValue != $v["VariableValue"]) {
 	
-					$o = IPS_GetObject($targetID["VariableID"]);
+					$o = IPS_GetObject($targetID);
 					if($v['VariableCustomAction'] != "") {
 						$actionID = $v['VariableCustomAction'];
 					} else {
 						$actionID = $v['VariableAction'];
 					}
 	
-					$this->SendDebug("Action", "Device ".$targetID["VariableID"]." will be updated!", 0);
+					$this->SendDebug("Action", "Device ".$targetID." will be updated!", 0);
 	
 					if(IPS_InstanceExists($actionID)) {
 						IPS_RequestAction($actionID, $o['ObjectIdent'], $targetValue);
 					} else if(IPS_ScriptExists($actionID)) {
-						echo IPS_RunScriptWaitEx($actionID, Array("VARIABLE" => $targetID["VariableID"], "VALUE" => $targetValue));
+						echo IPS_RunScriptWaitEx($actionID, Array("VARIABLE" => $targetID, "VALUE" => $targetValue));
 					}
 	
 				}
@@ -314,19 +327,19 @@ class AnwesenheitsSimulation extends IPSModule
 		foreach ($targetIDs as $targetID) {
 
 			//If the the variable has a name we use it 
-			if ($targetID["Name"] == "") {
-				$name = IPS_GetName($targetID["VariableID"]);
+			if ($this->GetName($targetID) == "") {
+				$name = IPS_GetName($targetID);
 			} else {
-				$name = $targetID["Name"];
+				$name = $this->GetName($targetID);
 			}
 
 			$html .= "<tr style='border-top: 1px solid rgba(255,255,255,0.10);'>";
 			$html .= "<td style='padding: 5px;'>".$name."</td>";
-			if(isset($nextSimulationData[$targetID["VariableID"]])) {
-				$html .= "<td style='padding: 5px;'>".(int)$nextSimulationData[$targetID["VariableID"]]["currentValue"]."</td>";
-				$html .= "<td style='padding: 5px;'>".$nextSimulationData[$targetID["VariableID"]]["currentTime"]."</td>";
-				$html .= "<td style='padding: 5px;'>".(int)$nextSimulationData[$targetID["VariableID"]]["nextValue"]."</td>";
-				$html .= "<td style='padding: 5px;'>".$nextSimulationData[$targetID["VariableID"]]["nextTime"]."</td>";
+			if(isset($nextSimulationData[$targetID])) {
+				$html .= "<td style='padding: 5px;'>".(int)$nextSimulationData[$targetID]["currentValue"]."</td>";
+				$html .= "<td style='padding: 5px;'>".$nextSimulationData[$targetID]["currentTime"]."</td>";
+				$html .= "<td style='padding: 5px;'>".(int)$nextSimulationData[$targetID]["nextValue"]."</td>";
+				$html .= "<td style='padding: 5px;'>".$nextSimulationData[$targetID]["nextTime"]."</td>";
 			} else {
 				$html .= "<td style='padding: 5px;'>0</td>";
 				$html .= "<td style='padding: 5px;'>00:00</td>";
