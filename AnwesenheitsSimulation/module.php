@@ -52,7 +52,6 @@ class AnwesenheitsSimulation extends IPSModule
 			//When activating the simulation, fetch actual data for a day and activate timer for updating targets
 			if($this->UpdateData()) {
 				$this->UpdateTargets();
-				IPS_SetEventActive($this->GetIDForIdent("UpdateDataTimer"), true);
 				IPS_SetHidden($this->GetIDForIdent("SimulationView"), false);
 			}
 		} else {
@@ -60,7 +59,6 @@ class AnwesenheitsSimulation extends IPSModule
 			SetValue($this->GetIDForIdent("SimulationDay"), "Simulation deaktiviert");
 			SetValue($this->GetIDForIdent("SimulationData"), "");
 			$this->SetTimerInterval("UpdateTargetsTimer", 0);
-			IPS_SetEventActive($this->GetIDForIdent("UpdateDataTimer"), false);
 			SetValue($this->GetIDForIdent("SimulationView"), "Simulation deaktiviert");
 			IPS_SetHidden($this->GetIDForIdent("SimulationView"), true);
 		}
