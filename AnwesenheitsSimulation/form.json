@@ -22,7 +22,6 @@
         "name": "Name",
         "width": "200px",
         "add": "",
-        "value": "",
         "edit": {
           "type": "ValidationTextBox"
         }
