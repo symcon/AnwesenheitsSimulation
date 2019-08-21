@@ -9,6 +9,7 @@ class AnwesenheitsSimulation extends IPSModule
 		//Properties
 		$this->RegisterPropertyInteger("RequiredSwitchCount", 4);
 		$this->RegisterPropertyInteger("ArchiveControlID", IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}")[0]);
+		$this->RegisterPropertyString("Targets", "[]");
 
 		//Timer
 		$this->RegisterMidnightTimer("UpdateDataTimer", 'if(AS_UpdateData($_IPS[\'TARGET\'])) {AS_UpdateTargets($_IPS[\'TARGET\']);}');
@@ -17,12 +18,10 @@ class AnwesenheitsSimulation extends IPSModule
 		//Variables
 		$this->RegisterVariableString("SimulationData", "SimulationData", "");
 		IPS_SetHidden($this->GetIDForIdent("SimulationData"), true);
-		$this->RegisterVariableString("SimulationView", "Simulationsvorschau", "~HTMLBox");
-		$this->RegisterVariableString("SimulationDay", "Simulationsquelle (Tag)", "");
-		$this->RegisterVariableBoolean("Active", "Simulation aktiv", "~Switch");
+		$this->RegisterVariableString("SimulationView", $this->Translate("Simulation preview"), "~HTMLBox");
+		$this->RegisterVariableString("SimulationDay", $this->Translate("Simulations source (Day)"), "");
+		$this->RegisterVariableBoolean("Active", $this->Translate("Simulation active"), "~Switch");
 		$this->EnableAction("Active");
-
-		$this->CreateCategoryByIdent($this->InstanceID, "Targets", "Targets (Simulation)");
 
 	}
 
@@ -35,6 +34,28 @@ class AnwesenheitsSimulation extends IPSModule
 	public function ApplyChanges() {
 		//Never delete this line!
 		parent::ApplyChanges();
+
+		//Transfer links in list
+		if ($this->ReadPropertyString("Targets") == "[]") {
+            $targetID = @$this->GetIDForIdent("Targets");
+
+            if ($targetID) {
+                $variables = [];
+                foreach (IPS_GetChildrenIDs($targetID) as $ChildrenID) {
+                    $targetID = IPS_GetLink($ChildrenID)["TargetID"];
+                    $line = [
+                        "VariableID" => $targetID
+                    ];
+                    array_push($variables, $line);
+                    IPS_DeleteLink($ChildrenID);
+                }
+
+                IPS_DeleteCategory($targetID);
+                IPS_SetProperty($this->InstanceID, "Targets", json_encode($variables));
+                IPS_ApplyChanges($this->InstanceID);
+                return;
+            }
+        }
 
 	}
 
@@ -60,6 +81,22 @@ class AnwesenheitsSimulation extends IPSModule
 		SetValue($this->GetIDForIdent("Active"), $SwitchOn);
 
 	}
+	//If the the variable has a name we use it
+	private function GetName($VariableID)
+	{
+		$targets = json_decode($this->ReadPropertyString("Targets"), true);
+		foreach($targets as $target) {
+			if (($target["VariableID"] == $VariableID) && (IPS_VariableExists($target["VariableID"]))) {
+				if ($target["Name"] == "") {
+					return IPS_GetName($VariableID);
+				} else {
+					return $target["Name"];
+				}
+				
+			}
+		}
+	}	
+
 
 	public function RequestAction($Ident, $Value) {
 
@@ -73,18 +110,15 @@ class AnwesenheitsSimulation extends IPSModule
 
 	}
 
-	//Returns all "real" variableID's as array, which are linked in the "Targets" category
+	//Returns all variableIDs in list
 	private function GetTargets() {
 
-		$targetIDs = IPS_GetChildrenIDs(IPS_GetObjectIDByIdent("Targets", $this->InstanceID));
-
-		$result = array();
-		foreach($targetIDs as $targetID) {
-			//Only allow links
-			if (IPS_LinkExists($targetID)) {
-				if (IPS_VariableExists(IPS_GetLink($targetID)['TargetID'])) {
-					$result[] = $targetID;
-				}
+		$targets = json_decode($this->ReadPropertyString("Targets"), true);
+		
+		$result = [];
+		foreach($targets as $target) {
+			if (IPS_VariableExists($target["VariableID"])) {
+				$result[] = $target["VariableID"];
 			}
 		}
 		return $result;
@@ -96,15 +130,12 @@ class AnwesenheitsSimulation extends IPSModule
 		$dayDiff = $day * 24 * 3600;
 		$dayData = array();
 
-		//Going through all linked variables
+		//Going through all variables
 		foreach($targetIDs as $targetID) {
 
-			//resolve link to linked targetID
-			$linkedTargetID = IPS_GetLink($targetID)['TargetID'];
-
-			if (AC_GetLoggingStatus($this->ReadPropertyInteger("ArchiveControlID"), $linkedTargetID)) {
+			if (AC_GetLoggingStatus($this->ReadPropertyInteger("ArchiveControlID"), $targetID)) {
 				//Fetch Data for all variables but only one day
-				$values = AC_GetLoggedValues($this->ReadPropertyInteger("ArchiveControlID"), $linkedTargetID, $dayStart - $dayDiff, $dayStart + (24 * 3600) - $dayDiff - 1, 0);
+				$values = AC_GetLoggedValues($this->ReadPropertyInteger("ArchiveControlID"), $targetID, $dayStart - $dayDiff, $dayStart + (24 * 3600) - $dayDiff - 1, 0);
 				if (sizeof($values) > 0){
 
 					//Transform UnixTimeStamp into human readable value
@@ -113,17 +144,17 @@ class AnwesenheitsSimulation extends IPSModule
 					}
 
 					//Reverse array to have the Timestamps ascending
-					$dayData[$linkedTargetID] = array_reverse($values);
+					$dayData[$targetID] = array_reverse($values);
 				}
 			}
 		}
 
-		// return all values for linked variables for one day in a array
+		// return all values for listed variables for one day in a array
 		return array("Date" => date("d.m.Y", $dayStart - $dayDiff), "Data" => $dayData);
 
 	}
 
-	//returns a array of all linked variables for 1 day and checks if this meets the needed switchcount
+	//returns a array of all listed variables for 1 day and checks if this meets the needed switchcount
 	private function GetDataArray($days, $targetIDs) {
 
 		//Get the dayData for all variables
@@ -243,35 +274,32 @@ class AnwesenheitsSimulation extends IPSModule
 
 		foreach ($targetIDs as $targetID){
 
-			//resolve link to linked targetID
-			$linkedTargetID = IPS_GetLink($targetID)['TargetID'];
+			$v = IPS_GetVariable($targetID);
 
-			$v = IPS_GetVariable($linkedTargetID);
-
-			if(!isset($NextSimulationData[$linkedTargetID])) {
-				$this->SendDebug("Update", "Device ".$linkedTargetID." has no simulation data for now!", 0);
+			if(!isset($NextSimulationData[$targetID])) {
+				$this->SendDebug("Update", "Device ".$targetID." has no simulation data for now!", 0);
 			} else {
-				$this->SendDebug("Update", "Device ".$linkedTargetID." shall be ".(int)$NextSimulationData[$linkedTargetID]['currentValue']." since ".$NextSimulationData[$linkedTargetID]['currentTime']." and currently is ".(int)$v["VariableValue"], 0);
+				$this->SendDebug("Update", "Device ".$targetID." shall be ".(int)$NextSimulationData[$targetID]['currentValue']." since ".$NextSimulationData[$targetID]['currentTime']." and currently is ".(int)$v["VariableValue"], 0);
 
 				//Set variableValue, if there is a currentValue and its not the same as already set
-				$targetValue = $NextSimulationData[$linkedTargetID]['currentValue'];
+				$targetValue = $NextSimulationData[$targetID]['currentValue'];
 
 				//Only update if target differs
 				if ($targetValue != $v["VariableValue"]) {
 	
-					$o = IPS_GetObject($linkedTargetID);
+					$o = IPS_GetObject($targetID);
 					if($v['VariableCustomAction'] != "") {
 						$actionID = $v['VariableCustomAction'];
 					} else {
 						$actionID = $v['VariableAction'];
 					}
 	
-					$this->SendDebug("Action", "Device ".$linkedTargetID." will be updated!", 0);
+					$this->SendDebug("Action", "Device ".$targetID." will be updated!", 0);
 	
 					if(IPS_InstanceExists($actionID)) {
 						IPS_RequestAction($actionID, $o['ObjectIdent'], $targetValue);
 					} else if(IPS_ScriptExists($actionID)) {
-						echo IPS_RunScriptWaitEx($actionID, Array("VARIABLE" => $linkedTargetID, "VALUE" => $targetValue));
+						echo IPS_RunScriptWaitEx($actionID, Array("VARIABLE" => $targetID, "VALUE" => $targetValue));
 					}
 	
 				}
@@ -292,32 +320,24 @@ class AnwesenheitsSimulation extends IPSModule
 
 		$html = "<table style='width: 100%; border-collapse: collapse;'>";
 		$html .= "<tr>";
-		$html .= "<td style='padding: 5px; font-weight: bold;'>Aktor</td>";
-		$html .= "<td style='padding: 5px; font-weight: bold;'>Letzter Wert</td>";
-		$html .= "<td style='padding: 5px; font-weight: bold;'>Seit</td>";
-		$html .= "<td style='padding: 5px; font-weight: bold;'>Nächster Wert</td>";
-		$html .= "<td style='padding: 5px; font-weight: bold;'>Um</td>";
+		$html .= "<td style='padding: 5px; font-weight: bold;'>" . $this->Translate("Actor") . "</td>";
+		$html .= "<td style='padding: 5px; font-weight: bold;'>" . $this->Translate("Last value") . "</td>";
+		$html .= "<td style='padding: 5px; font-weight: bold;'>" . $this->Translate("Since") . "</td>";
+		$html .= "<td style='padding: 5px; font-weight: bold;'>" . $this->Translate("Next value") . "</td>";
+		$html .= "<td style='padding: 5px; font-weight: bold;'>" . $this->Translate("At") . "</td>";
 		$html .= "</tr>";
 
 		foreach ($targetIDs as $targetID) {
 
-			//resolve link to linked targetID
-			$linkedTargetID = IPS_GetLink($targetID)['TargetID'];
-
-			//if the link name has been changed we prefer the name of the link
-			if(IPS_GetName($linkedTargetID) == IPS_GetName($targetID)) {
-				$name = IPS_GetName(IPS_GetParent($linkedTargetID))."\\".IPS_GetName($linkedTargetID);
-			} else {
-				$name = IPS_GetName($targetID);
-			}
+			$name = $this->GetName($targetID);
 
 			$html .= "<tr style='border-top: 1px solid rgba(255,255,255,0.10);'>";
 			$html .= "<td style='padding: 5px;'>".$name."</td>";
-			if(isset($nextSimulationData[$linkedTargetID])) {
-				$html .= "<td style='padding: 5px;'>".(int)$nextSimulationData[$linkedTargetID]["currentValue"]."</td>";
-				$html .= "<td style='padding: 5px;'>".$nextSimulationData[$linkedTargetID]["currentTime"]."</td>";
-				$html .= "<td style='padding: 5px;'>".(int)$nextSimulationData[$linkedTargetID]["nextValue"]."</td>";
-				$html .= "<td style='padding: 5px;'>".$nextSimulationData[$linkedTargetID]["nextTime"]."</td>";
+			if(isset($nextSimulationData[$targetID])) {
+				$html .= "<td style='padding: 5px;'>".(int)$nextSimulationData[$targetID]["currentValue"]."</td>";
+				$html .= "<td style='padding: 5px;'>".$nextSimulationData[$targetID]["currentTime"]."</td>";
+				$html .= "<td style='padding: 5px;'>".(int)$nextSimulationData[$targetID]["nextValue"]."</td>";
+				$html .= "<td style='padding: 5px;'>".$nextSimulationData[$targetID]["nextTime"]."</td>";
 			} else {
 				$html .= "<td style='padding: 5px;'>0</td>";
 				$html .= "<td style='padding: 5px;'>00:00</td>";
@@ -331,18 +351,6 @@ class AnwesenheitsSimulation extends IPSModule
 
 		SetValue($this->GetIDForIdent("SimulationView"), $html);
 
-	}
-
-	private function CreateCategoryByIdent($id, $ident, $name) {
-		 $cid = @IPS_GetObjectIDByIdent($ident, $id);
-		 if($cid === false)
-		 {
-			 $cid = IPS_CreateCategory();
-			 IPS_SetParent($cid, $id);
-			 IPS_SetName($cid, $name);
-			 IPS_SetIdent($cid, $ident);
-		 }
-		 return $cid;
 	}
 
 	private function RegisterMidnightTimer($Ident, $Action) {
