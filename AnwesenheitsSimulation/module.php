@@ -81,17 +81,20 @@ class AnwesenheitsSimulation extends IPSModule
 		SetValue($this->GetIDForIdent("Active"), $SwitchOn);
 
 	}
-
-	private function  GetName($VariableID)
+	//If the the variable has a name we use it
+	private function GetName($VariableID)
 	{
-
 		$targets = json_decode($this->ReadPropertyString("Targets"), true);
 		foreach($targets as $target) {
 			if (($target["VariableID"] == $VariableID) && (IPS_VariableExists($target["VariableID"]))) {
-				return $target["Name"];
+				if ($target["Name"] == "") {
+					return IPS_GetName($VariableID);
+				} else {
+					return $target["Name"];
+				}
+				
 			}
 		}
-		 
 	}	
 
 
@@ -326,12 +329,7 @@ class AnwesenheitsSimulation extends IPSModule
 
 		foreach ($targetIDs as $targetID) {
 
-			//If the the variable has a name we use it 
-			if ($this->GetName($targetID) == "") {
-				$name = IPS_GetName($targetID);
-			} else {
-				$name = $this->GetName($targetID);
-			}
+			$name = $this->GetName($targetID);
 
 			$html .= "<tr style='border-top: 1px solid rgba(255,255,255,0.10);'>";
 			$html .= "<td style='padding: 5px;'>".$name."</td>";
