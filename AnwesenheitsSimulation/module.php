@@ -40,7 +40,8 @@ class AnwesenheitsSimulation extends IPSModule
 		} 
 
 		//Setting initial timer interval
-		$starttimer = mktime(23, 55, 0);
+		$tomorrow = time() + (24 * 60 * 60),
+		$starttimer = mktime(0, 0, 0, date("m", $tomorrow), date("d", $tomorrow), date("Y", $tomorrow));
 		$this->SendDebug("TimerInterval", $starttimer, 0);
 		$this->SetTimerInterval("UpdateTargetsTimer", ($starttimer - time()) * 1000);
 	
