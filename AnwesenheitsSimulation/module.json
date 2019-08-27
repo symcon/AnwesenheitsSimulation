@@ -10,5 +10,6 @@
     "parentRequirements": [],
     "childRequirements": [],
     "implemented": [],
-    "prefix": "AS"
+    "prefix": "AS",
+    "url": "https://github.com/symcon/AnwesenheitsSimulation/tree/master/AnwesenheitsSimulation"
 }

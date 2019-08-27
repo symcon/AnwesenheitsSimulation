@@ -2,7 +2,15 @@
 	"translations": {
 		"de": { 
 			"Minimum needed daily changes": "Minimale Anzahl an täglichen Schaltvorgängen",
-			"Count": "Anzahl"
+			"Count": "Anzahl",
+			"Simulation preview": "Simulationsvorschau",
+			"Simulations source (Day)": "Simulationsquelle (Tag)",
+			"Simulation active": "Simulation aktiv",
+			"Actor": "Aktor",
+			"Last value": "Letzter Wert",
+			"Since": "Seit",
+			"Next value": "Nächster Wert",
+			"At": "Um"
 		}
 	}
 }
