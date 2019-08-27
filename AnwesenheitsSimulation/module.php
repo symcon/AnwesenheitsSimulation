@@ -34,6 +34,10 @@ class AnwesenheitsSimulation extends IPSModule
 		//Never delete this line!
 		parent::ApplyChanges();
 
+		//deletes unneeded event
+		if (@$this->GetIDForIdent("UpdateDataTimer")) {
+			IPS_DeleteEvent($this->GetIDForIdent("UpdateDataTimer"));
+		}
 		//Transfer links in list
 		if ($this->ReadPropertyString("Targets") == "[]") {
             $targetID = @$this->GetIDForIdent("Targets");
@@ -56,6 +60,11 @@ class AnwesenheitsSimulation extends IPSModule
             }
         }
 
+		//Setting initial timer interval
+		$starttimer = strtotime("tomorrow", mktime(0, 0, 0));
+		$this->SendDebug("TimerInterval", $starttimer, 0);
+		$this->SetTimerInterval("UpdateTargetsTimer", ($starttimer - time()) * 1000);
+			
 	}
 
 	public function SetSimulation(bool $SwitchOn){
@@ -126,13 +135,14 @@ class AnwesenheitsSimulation extends IPSModule
 		$dayStart = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 		$dayDiff = $day * 24 * 3600;
 		$dayData = array();
+		$archiveControlID = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}")[0];
 
 		//Going through all variables
 		foreach($targetIDs as $targetID) {
 
-			if (AC_GetLoggingStatus($this->ReadPropertyInteger("ArchiveControlID"), $targetID)) {
+			if (AC_GetLoggingStatus($archiveControlID, $targetID)) {
 				//Fetch Data for all variables but only one day
-				$values = AC_GetLoggedValues($this->ReadPropertyInteger("ArchiveControlID"), $targetID, $dayStart - $dayDiff, $dayStart + (24 * 3600) - $dayDiff - 1, 0);
+				$values = AC_GetLoggedValues($archiveControlID, $targetID, $dayStart - $dayDiff, $dayStart + (24 * 3600) - $dayDiff - 1, 0);
 				if (sizeof($values) > 0){
 
 					//Transform UnixTimeStamp into human readable value
@@ -348,34 +358,6 @@ class AnwesenheitsSimulation extends IPSModule
 		$html .= "</table>";
 
 		SetValue($this->GetIDForIdent("SimulationView"), $html);
-
-	}
-
-	private function RegisterMidnightTimer($Ident, $Action) {
-
-		//search for already available scripts with proper ident
-		$eid = @IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
-
-		//properly update eventID
-		if($eid === false) {
-			$eid = 0;
-		} else if(IPS_GetEvent($eid)['EventType'] <> 1) {
-			IPS_DeleteEvent($eid);
-			$eid = 0;
-		}
-
-		//we need to create one
-		if ($eid == 0) {
-			$eid = IPS_CreateEvent(1);
-			IPS_SetParent($eid, $this->InstanceID);
-			IPS_SetIdent($eid, $Ident);
-			IPS_SetName($eid, $Ident);
-			IPS_SetHidden($eid, true);
-			IPS_SetEventScript($eid, $Action);
-		}
-
-		IPS_SetEventCyclic($eid, 2, 1, 0, 0, 0, 0);
-		IPS_SetEventCyclicTimeFrom($eid, 0, 0, 1);
 
 	}
 
