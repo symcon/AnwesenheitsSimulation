@@ -3,7 +3,7 @@ Simuliert die Anwesenheit von Personen im Haushalt.
 Das Modul bezieht dafür zufällig die Tagesdaten von einem der letzten 4 identischen Wochentagen. Sind an keinem dieser 4 Tage genug Schaltvorgänge geloggt, wird zufällig einer der letzten 30 Tage gewählt.  
 Ist auch innerhalb dieser 30 Tage kein gültiger Tagesdatensatz vorhanden, ist keine Simulation möglich. Sollte keine Simulation möglich sein, wird dies als Nachricht in der Stringvariable "Simulationsquelle (Tag)" angezeigt.
 
-### Inhaltverzeichnis
+### Inhaltsverzeichnis
 
 1. [Funktionsumfang](#1-funktionsumfang)
 2. [Voraussetzungen](#2-voraussetzungen)
@@ -23,17 +23,17 @@ Ist auch innerhalb dieser 30 Tage kein gültiger Tagesdatensatz vorhanden, ist k
 
 ### 2. Voraussetzungen
 
-- IP-Symcon ab Version 4.x
+- IP-Symcon ab Version 5.0
 
 ### 3. Software-Installation
 
-* Über den Modul Store das Modul Anwesenheits-Simulation installieren.
-* Alternativ über das Modul Control folgende URL hinzufügen:
-´https://github.com/symcon/AnwesenheitsSimulation`  
+* Über den Module Store das Modul Anwesenheits-Simulation installieren.
+* Alternativ über das Module Control folgende URL hinzufügen:
+`https://github.com/symcon/AnwesenheitsSimulation`  
 
 ### 4. Einrichten der Instanzen in IP-Symcon
 
-- Unter "Instanz hinzufügen" ist das 'AnwesenheitsSimulation'-Modul unter dem Hersteller '(Sonstige)' aufgeführt.  
+- Unter "Instanz hinzufügen" ist das 'AnwesenheitsSimulation'-Modul unter dem Hersteller '(Gerät)' aufgeführt.  
 - Alle zu schaltenden Variablen müssen in der "Targets (Simulation)"-Kategorie verlinkt werden.
 
 __Konfigurationsseite__:
