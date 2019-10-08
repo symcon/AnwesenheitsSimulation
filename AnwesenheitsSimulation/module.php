@@ -62,6 +62,15 @@ class AnwesenheitsSimulation extends IPSModule
             }
         }
 
+        //Adding references
+        foreach($this->GetReferenceList() as $referenceID) {
+            $this->UnregisterReference($referenceID);
+        }
+        $targets = json_decode($this->ReadPropertyString('Targets'));
+        foreach($targets as $targerID) {
+            $this->RegisterReference($targerID->VariableID);
+        }
+
         //Setting initial timer interval
         $starttimer = strtotime('tomorrow');
         $this->SendDebug('TimerInterval', $starttimer, 0);
