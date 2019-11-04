@@ -139,7 +139,7 @@ class AnwesenheitsSimulation extends IPSModule
     //returns a array of the dayData of 1 Variable
     private function GetDayData($day, $targetIDs)
     {
-        $dayStart = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+        $dayStart = mktime(0, 0, 0, intval(date('m')), intval(date('d')), intval(date('Y')));
         $dayDiff = $day * 24 * 3600;
         $dayData = [];
         $archiveControlID = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}')[0];
