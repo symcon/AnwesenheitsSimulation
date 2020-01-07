@@ -72,7 +72,7 @@ class AnwesenheitsSimulation extends IPSModule
         }
 
         //Setting initial timer interval
-        if($this->GetValue('Active')) {
+        if ($this->GetValue('Active')) {
             $starttimer = strtotime('tomorrow');
             $this->SendDebug('TimerInterval', $starttimer, 0);
             $this->SetTimerInterval('UpdateTargetsTimer', ($starttimer - time()) * 1000);
