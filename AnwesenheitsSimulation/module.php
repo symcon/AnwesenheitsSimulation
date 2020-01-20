@@ -13,12 +13,13 @@ class AnwesenheitsSimulation extends IPSModule
         $this->RegisterPropertyInteger('ArchiveControlID', IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}')[0]);
         $this->RegisterPropertyString('Targets', '[]');
 
+        //Attributes
+        $this->RegisterAttributeString('SimulationData', '[]');
+
         //Timer
         $this->RegisterTimer('UpdateTargetsTimer', 0, 'if(AS_UpdateData($_IPS[\'TARGET\'])) {AS_UpdateTargets($_IPS[\'TARGET\']);}');
 
         //Variables
-        $this->RegisterVariableString('SimulationData', 'SimulationData', '');
-        IPS_SetHidden($this->GetIDForIdent('SimulationData'), true);
         $this->RegisterVariableString('SimulationView', $this->Translate('Simulation preview'), '~HTMLBox');
         $this->RegisterVariableString('SimulationDay', $this->Translate('Simulations source (Day)'), '');
         $this->RegisterVariableBoolean('Active', $this->Translate('Simulation active'), '~Switch');
@@ -60,6 +61,15 @@ class AnwesenheitsSimulation extends IPSModule
                 IPS_ApplyChanges($this->InstanceID);
                 return;
             }
+        }
+
+        //Transfer legacy SimulationData into attributes
+        $simulationDataID = $this->GetIDForIdent('SimulationData');
+        $simulationDataAttr = $this->ReadAttributeString('SimulatinData');
+        if (($simulationDataID != 0) && (function_exists('wddx_deserialize')) && ($simulationDataAttr == '[]')){
+            $simulationData = json_encode(wddx_deserialize(GetValue($simulationDataID)));
+            $this->WriteAttributeString('SimulationData', $simulationData);
+            $this->UnregisterVariable($simulationDataID);
         }
 
         //Adding references
@@ -218,7 +228,7 @@ class AnwesenheitsSimulation extends IPSModule
             SetValue($this->GetIDForIdent('SimulationDay'), 'Zu wenig Daten!');
         } else {
             SetValue($this->GetIDForIdent('SimulationDay'), $simulationData['Date']);
-            SetValue($this->GetIDForIdent('SimulationData'), wddx_serialize_value($simulationData['Data']));
+            $this->WriteAttributeString('SimulationData', json_encode($simulationData['Data']));
         }
 
         return count($simulationData) > 0;
@@ -226,7 +236,7 @@ class AnwesenheitsSimulation extends IPSModule
 
     public function GetNextSimulationData()
     {
-        $simulationData = wddx_deserialize(GetValueString(IPS_GetObjectIDByIdent('SimulationData', $this->InstanceID)));
+        $simulationData = json_decode($this->ReadAttributeString('SimulationData'));
         $nextSwitchTimestamp = PHP_INT_MAX;
         $result = [];
 
