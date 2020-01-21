@@ -42,7 +42,6 @@ Name          | Beschreibung
 ------------- | ---------------------------------
 Mindestanzahl | Dies beschreibt die durchschnittliche Mindestanzahl von Variablenschaltungen aller ausgewählten Variablen, die vorhanden sein müssen.
 
-
 ### 5. Statusvariablen und Profile
 
 Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
