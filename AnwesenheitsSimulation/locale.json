@@ -10,7 +10,11 @@
 			"Last value": "Letzter Wert",
 			"Since": "Seit",
 			"Next value": "Nächster Wert",
-			"At": "Um"
+			"At": "Um",
+			"Variables": "Variablen",
+			"Variable": "Variable",
+			"Name (optional)": "Name (optional)",
+			"Too few data!": "Zu wenig Daten!"
 		}
 	}
 }
