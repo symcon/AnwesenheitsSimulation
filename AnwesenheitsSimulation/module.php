@@ -16,7 +16,7 @@ class AnwesenheitsSimulation extends IPSModule
         //Timer
         $this->RegisterTimer('MidnightTimer', 0, 'if(AS_UpdateData($_IPS[\'TARGET\'])) {AS_UpdateTargets($_IPS[\'TARGET\']);}');
         $this->RegisterTimer('UpdateTargetsTimer', 0, 'AS_UpdateTargets($_IPS[\'TARGET\']);');
-        
+
         //Variables
         $this->RegisterVariableString('SimulationData', 'SimulationData', '');
         IPS_SetHidden($this->GetIDForIdent('SimulationData'), true);
