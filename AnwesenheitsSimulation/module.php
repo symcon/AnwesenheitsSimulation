@@ -248,8 +248,6 @@ class AnwesenheitsSimulation extends IPSModule
 
                     //Getting the value to set
                     foreach ($value as $key) {
-                        $this->SendDebug('DateTime', date('H:i:s', $this->getTime()), 0);
-                        $this->SendDebug('TimeStamp', $key['TimeStamp'], 0);
                         if (date('H:i:s', $this->getTime()) > $key['TimeStamp']) {
                             $currentValue = $key['Value'];
                             $currentTime = $key['TimeStamp'];
