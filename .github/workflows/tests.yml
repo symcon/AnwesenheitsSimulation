@@ -12,6 +12,11 @@ jobs:
     - uses: actions/checkout@v1
       with:
           submodules: true
+  
+    - name: Install required PHP version
+      uses: shivammathur/setup-php@v1
+      with:
+          php-version: '7.3' #This version is currently used by Symcon | In later versions the tested wddx function is removed
 
     - name: Install latest PHPUnit
       run: wget https://phar.phpunit.de/phpunit.phar
