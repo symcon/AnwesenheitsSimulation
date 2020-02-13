@@ -14,7 +14,8 @@ class AnwesenheitsSimulation extends IPSModule
         $this->RegisterPropertyString('Targets', '[]');
 
         //Timer
-        $this->RegisterTimer('UpdateTargetsTimer', 0, 'if(AS_UpdateData($_IPS[\'TARGET\'])) {AS_UpdateTargets($_IPS[\'TARGET\']);}');
+        $this->RegisterTimer('MidnightTimer', 0, 'if(AS_UpdateData($_IPS[\'TARGET\'])) {AS_UpdateTargets($_IPS[\'TARGET\']);}');
+        $this->RegisterTimer('UpdateTargetsTimer', 0, 'AS_UpdateTargets($_IPS[\'TARGET\']);');
 
         //Variables
         $this->RegisterVariableString('SimulationData', 'SimulationData', '');
@@ -322,7 +323,7 @@ class AnwesenheitsSimulation extends IPSModule
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
         }
 
-        $this->SetTimerInterval('UpdateTargetsTimer', 1000 * (strtotime('tomorrow') - time()));
+        $this->SetTimerInterval('MidnightTimer', 1000 * (strtotime('tomorrow') - time()));
     }
 
     private function UpdateView($targetIDs, $nextSimulationData)
