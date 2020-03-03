@@ -1,6 +1,7 @@
 {
   "elements":
   [
+    {"type": "Label", "name": "InfoDisplay", "caption": "", "visible": false},
   {
     "type": "List",
     "name": "Targets",

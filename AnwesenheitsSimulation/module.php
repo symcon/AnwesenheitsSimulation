@@ -46,11 +46,11 @@ class AnwesenheitsSimulation extends IPSModule
 
         //Transfer links in list
         if ($this->ReadPropertyString('Targets') == '[]') {
-            $targetID = @$this->GetIDForIdent('Targets');
+            $targetCategoryID = @$this->GetIDForIdent('Targets');
 
-            if ($targetID) {
+            if ($targetCategoryID) {
                 $variables = [];
-                foreach (IPS_GetChildrenIDs($targetID) as $ChildrenID) {
+                foreach (IPS_GetChildrenIDs($targetCategoryID) as $ChildrenID) {
                     $targetID = IPS_GetLink($ChildrenID)['TargetID'];
                     $line = [
                         'VariableID' => $targetID
@@ -59,7 +59,7 @@ class AnwesenheitsSimulation extends IPSModule
                     IPS_DeleteLink($ChildrenID);
                 }
 
-                IPS_DeleteCategory($targetID);
+                IPS_DeleteCategory($targetCategoryID);
                 IPS_SetProperty($this->InstanceID, 'Targets', json_encode($variables));
                 IPS_ApplyChanges($this->InstanceID);
                 return;
@@ -71,8 +71,8 @@ class AnwesenheitsSimulation extends IPSModule
             $this->UnregisterReference($referenceID);
         }
         $targets = json_decode($this->ReadPropertyString('Targets'));
-        foreach ($targets as $targerID) {
-            $this->RegisterReference($targerID->VariableID);
+        foreach ($targets as $targetID) {
+            $this->RegisterReference($targetID->VariableID);
         }
 
         //Setting initial timer interval
@@ -83,6 +83,39 @@ class AnwesenheitsSimulation extends IPSModule
         } else {
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
         }
+    }
+
+    public function GetConfigurationForm()
+    {
+       //Add options to form
+       $jsonForm = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+       $noActions = $this->CheckAction();
+       if ($noActions) {
+            $jsonForm['elements'][0]['caption'] = $noActions;
+            $jsonForm['elements'][0]['visible'] = true;
+       }
+       return json_encode($jsonForm); 
+    }
+
+    private function CheckAction()
+    {
+        $list = json_decode($this->ReadPropertyString('Targets'), true);
+        $actionInfo = [];
+        foreach ($list as $listVariable){
+            $variableID = $listVariable['VariableID'];
+            if (/*HasAction($variableID)*/true) { //TODO FIXME: Version date
+                $this->LogMessage(sprintf($this->Translate('The variable with ID %s has no valid action.'), $listVariable['VariableID']), 10204);
+                $actionInfo[] = $variableID;
+            }
+        }
+        if (sizeof($actionInfo) > 0) {
+            $caption = $this->Translate('The following variables have no action and therefore cannot be switched:');
+            foreach ($actionInfo as $varID) {
+                $caption .= "\n - " . IPS_GetLocation($varID);
+            }
+            return $caption;
+        }
+        return 0;
     }
 
     public function SetSimulation(bool $SwitchOn)
@@ -203,7 +236,7 @@ class AnwesenheitsSimulation extends IPSModule
 
         return [];
     }
-
+    
     //Fetches the needed SimulationData for a whole day
     public function UpdateData()
     {
@@ -312,7 +345,7 @@ class AnwesenheitsSimulation extends IPSModule
                     }
 
                     $this->SendDebug('Action', 'Device ' . $targetID . ' will be updated!', 0);
-
+                    $this->SendDebug('RequestActionID', "$actionID", 0);
                     if (IPS_InstanceExists($actionID)) {
                         IPS_RequestAction($actionID, $o['ObjectIdent'], $targetValue);
                     } elseif (IPS_ScriptExists($actionID)) {
