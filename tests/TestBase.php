@@ -17,8 +17,7 @@ class TestBase extends TestCase
 {
     protected $ArchiveControlID;
     protected $AnwesenheitsSimulationID;
-    
-    
+
     protected function setUp(): void
     {
         //Reset
@@ -39,12 +38,10 @@ class TestBase extends TestCase
         }
         $this->ArchiveControlID = IPS_CreateInstance('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
         $this->AnwesenheitsSimulationID = IPS_CreateInstance('{87F47896-DD54-442D-94FD-9990BD8D9F54}');
-        
 
         parent::setUp();
-
     }
-    
+
     protected function CreateActionVariable(int $VariableType, string $Ident, bool $Action = true)
     {
         $variableID = IPS_CreateVariable($VariableType);
@@ -65,5 +62,4 @@ class TestBase extends TestCase
         IPS_SetLinkTargetID($id, $TargetID);
         return $id;
     }
-    
 }

@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 include __DIR__ . '/TestBase.php';
 
-
 class AnwesenheitsSimulationTest extends TestBase
 {
-
     public function testBaseFunctionality()
     {
         //Variables
