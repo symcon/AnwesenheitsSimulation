@@ -17,7 +17,8 @@ class AnwesenheitsSimulation extends IPSModule
         $this->RegisterAttributeString('SimulationData', '[]');
 
         //Timer
-        $this->RegisterTimer('UpdateTargetsTimer', 0, 'if(AS_UpdateData($_IPS[\'TARGET\'])) {AS_UpdateTargets($_IPS[\'TARGET\']);}');
+        $this->RegisterTimer('MidnightTimer', 0, 'if(AS_UpdateData($_IPS[\'TARGET\'])) {AS_UpdateTargets($_IPS[\'TARGET\']);}');
+        $this->RegisterTimer('UpdateTargetsTimer', 0, 'AS_UpdateTargets($_IPS[\'TARGET\']);');
 
         //Variables
         $this->RegisterVariableString('SimulationView', $this->Translate('Simulation preview'), '~HTMLBox');
@@ -106,14 +107,15 @@ class AnwesenheitsSimulation extends IPSModule
             }
         } else {
             //When deactivating the simulation, kill data for simulation and deactivate timer for updating targets
-            SetValue($this->GetIDForIdent('SimulationDay'), 'Simulation deaktiviert');
-            SetValue($this->GetIDForIdent('SimulationData'), '');
+            $this->SetValue('SimulationDay', 'Simulation deaktiviert');
+            $this->SetValue('SimulationData', '');
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
-            SetValue($this->GetIDForIdent('SimulationView'), 'Simulation deaktiviert');
+            $this->SetTimerInterval('MidnightTimer', 0);
+            $this->SetValue('SimulationView', 'Simulation deaktiviert');
             IPS_SetHidden($this->GetIDForIdent('SimulationView'), true);
         }
 
-        SetValue($this->GetIDForIdent('Active'), $SwitchOn);
+        $this->SetValue('Active', $SwitchOn);
     }
     //If the the variable has a name we use it
     private function GetName($VariableID)
@@ -230,9 +232,8 @@ class AnwesenheitsSimulation extends IPSModule
 
         $simulationData = $this->GetDataArray(array_merge($weekDays, $singleDays), $targetIDs);
         if (count($simulationData) == 0) {
-            SetValue($this->GetIDForIdent('SimulationDay'), 'Zu wenig Daten!');
-        } else {
-            SetValue($this->GetIDForIdent('SimulationDay'), $simulationData['Date']);
+            $this->SetValue('SimulationDay', 'Zu wenig Daten!');
+        } else {            SetValue($this->GetIDForIdent('SimulationDay'), $simulationData['Date']);
             $this->WriteAttributeString('SimulationData', json_encode($simulationData['Data']));
         }
 
@@ -337,7 +338,7 @@ class AnwesenheitsSimulation extends IPSModule
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
         }
 
-        $this->SetTimerInterval('UpdateTargetsTimer', 1000 * (strtotime('tomorrow') - time()));
+        $this->SetTimerInterval('MidnightTimer', 1000 * (strtotime('tomorrow') - time()));
     }
 
     private function UpdateView($targetIDs, $nextSimulationData)
@@ -372,6 +373,6 @@ class AnwesenheitsSimulation extends IPSModule
 
         $html .= '</table>';
 
-        SetValue($this->GetIDForIdent('SimulationView'), $html);
+        $this->SetValue('SimulationView', $html);
     }
 }
