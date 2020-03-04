@@ -52,6 +52,7 @@ Targets (Simulation)    | Kategorie | Beinhaltet alle verlinkten Variablen, welc
 Simulation aktiv        | Boolean   | Zeigt an ob ob die Simulation aktiviert ist oder nicht. True = Aktiviert; False = Deaktiviert;
 Simulationsquelle (Tag) | String    | Der String beinhaltet das Datum, nach dem die Simulationsdaten ausgewählt wurden.
 UpdateTargetsTimer      | Timer     | Zum automatisch berechneten Zeitpunkt werden alle Variablen geschaltet/aktualisiert.
+MidnightTimer           | Timer     | Um 00:00:01 werden alle Daten für den neuen Tag berechnet.
 
 Es werden keine zusätzlichen Profile benötigt.
 
