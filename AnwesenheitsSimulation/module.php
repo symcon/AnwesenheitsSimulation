@@ -72,7 +72,7 @@ class AnwesenheitsSimulation extends IPSModule
                 $this->WriteAttributeString('SimulationData', $simulationData);
                 $this->UnregisterVariable('SimulationData');
             } elseif ($simulationDataAttr == '[]' && !function_exists('wddx_deserialize')) {
-                $this->SendDebug('MigrationInfo', $this->Translate("Counldn't migrate the SimulationData since the wddx functionality is deprecated."), 0);
+                $this->SendDebug('MigrationInfo', $this->Translate("Couldn't migrate the SimulationData since the wddx functionality is deprecated."), 0);
             } else {
                 $this->UnregisterVariable('SimulationData');
             }

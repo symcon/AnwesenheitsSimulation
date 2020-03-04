@@ -11,7 +11,7 @@
 			"Since": "Seit",
 			"Next value": "Nächster Wert",
 			"At": "Um",
-			"Counldn't migrate the SimulationData since the wddx functionality is deprecated.": "Konnte die SimulationData nicht migrieren, da die wddx-Funktionalität veraltet ist."
+			"Couldn't migrate the SimulationData since the wddx functionality is deprecated.": "Konnte die SimulationData nicht migrieren, da die wddx-Funktionalität veraltet ist."
 		}
 	}
 }
