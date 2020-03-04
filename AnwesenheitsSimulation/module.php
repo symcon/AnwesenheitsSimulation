@@ -236,7 +236,7 @@ class AnwesenheitsSimulation extends IPSModule
 
     public function GetNextSimulationData()
     {
-        $simulationData = json_decode($this->ReadAttributeString('SimulationData'));
+        $simulationData = json_decode($this->ReadAttributeString('SimulationData'), true);
         $nextSwitchTimestamp = PHP_INT_MAX;
         $result = [];
 
