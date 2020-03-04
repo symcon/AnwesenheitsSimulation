@@ -63,15 +63,20 @@ class AnwesenheitsSimulation extends IPSModule
             }
         }
 
-        //Transfer legacy SimulationData into attributes
-        $simulationDataID = $this->GetIDForIdent('SimulationData');
+        //Transfer legacy SimulationData into attribute
+        $simulationDataID = @$this->GetIDForIdent('SimulationData');
         $simulationDataAttr = $this->ReadAttributeString('SimulationData');
-        if (($simulationDataID != 0) && (function_exists('wddx_deserialize')) && ($simulationDataAttr == '[]')) {
-            $simulationData = json_encode(wddx_deserialize(GetValue($simulationDataID)));
-            $this->WriteAttributeString('SimulationData', $simulationData);
-            $this->UnregisterVariable($simulationDataID);
+        if (IPS_VariableExists($simulationDataID)) {
+            if ($simulationDataAttr == '[]' && function_exists('wddx_deserialize')) {
+                $simulationData = json_encode(wddx_deserialize(GetValue($simulationDataID)));
+                $this->WriteAttributeString('SimulationData', $simulationData);
+                $this->UnregisterVariable('SimulationData');
+            } elseif ($simulationDataAttr == '[]' && !function_exists('wddx_deserialize')) {
+                $this->SendDebug('MigrationInfo', $this->Translate("Counldn't migrate the SimulationData since the wddx functionality is deprecated."), 0);
+            } else {
+                $this->UnregisterVariable('SimulationData');
+            }
         }
-
         //Adding references
         foreach ($this->GetReferenceList() as $referenceID) {
             $this->UnregisterReference($referenceID);
