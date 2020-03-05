@@ -15,7 +15,7 @@ Ist auch innerhalb dieser 30 Tage kein gültiger Tagesdatensatz vorhanden, ist k
 
 ### 1. Funktionsumfang
 
-* Schalten von verlinkten Aktoren/Variablen über geloggte Werte.
+* Schalten von ausgewählten Aktoren/Variablen über geloggte Werte.
 * Einstellbarkeit der benötigen durchschnittlichen Schaltvorgänge, bevor ein Tag als Quelle zur Simulation zugelassen wird.
 * Ein-/Ausschaltbarkeit via WebFront-Button oder Skript-Funktion.
 * Anzeige welcher Tag zur Simulation genutzt wird.
@@ -34,14 +34,13 @@ Ist auch innerhalb dieser 30 Tage kein gültiger Tagesdatensatz vorhanden, ist k
 ### 4. Einrichten der Instanzen in IP-Symcon
 
 - Unter "Instanz hinzufügen" ist das 'AnwesenheitsSimulation'-Modul unter dem Hersteller '(Gerät)' aufgeführt.  
-- Alle zu schaltenden Variablen müssen in der "Targets (Simulation)"-Kategorie verlinkt werden.
+- Alle zu schaltenden Variablen müssen der Variablen Liste in der Instanzkonfiguration hinzugefügt werden.
 
 __Konfigurationsseite__:
 
 Name          | Beschreibung
 ------------- | ---------------------------------
-Mindestanzahl | Dies beschreibt die durchschnittliche Mindestanzahl von Variablenschaltungen aller verlinkten Variablen vorhanden sein müssen.
-
+Mindestanzahl | Dies beschreibt die durchschnittliche Mindestanzahl von Variablenschaltungen aller ausgewählten Variablen, die vorhanden sein müssen.
 
 ### 5. Statusvariablen und Profile
 
@@ -51,10 +50,9 @@ Name                    | Typ       | Beschreibung
 ----------------------- | --------- | ----------------
 Targets (Simulation)    | Kategorie | Beinhaltet alle verlinkten Variablen, welche bei der Simulation beachtet werden sollen. (Nur Links erlaubt)
 Simulation aktiv        | Boolean   | Zeigt an ob ob die Simulation aktiviert ist oder nicht. True = Aktiviert; False = Deaktiviert;
-SimulationData          | String    | Der String beinhaltet die WDDX-kodierten Tagesdaten, welche genutzt wird um die Varaiblen zu schalten.
 Simulationsquelle (Tag) | String    | Der String beinhaltet das Datum, nach dem die Simulationsdaten ausgewählt wurden.
 UpdateTargetsTimer      | Timer     | Zum automatisch berechneten Zeitpunkt werden alle Variablen geschaltet/aktualisiert.
-MidnightTimer           | Timer     | Zum automatisch berechneten Zeitpunkt werden die Tagesdaten um 00:00:01 für den neuen Tag berechnet.
+MidnightTimer           | Timer     | Um 00:00:01 werden alle Daten für den neuen Tag berechnet.
 
 Es werden keine zusätzlichen Profile benötigt.
 
