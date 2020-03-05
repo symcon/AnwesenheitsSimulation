@@ -87,28 +87,28 @@ class AnwesenheitsSimulation extends IPSModule
 
     public function GetConfigurationForm()
     {
-       //Add options to form
-       $jsonForm = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-       $noActions = $this->CheckAction();
-       if ($noActions) {
+        //Add options to form
+        $jsonForm = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        $noActions = $this->CheckAction();
+        if ($noActions) {
             $jsonForm['elements'][0]['caption'] = $noActions;
             $jsonForm['elements'][0]['visible'] = true;
-       }
-       return json_encode($jsonForm); 
+        }
+        return json_encode($jsonForm);
     }
 
     private function CheckAction()
     {
         $list = json_decode($this->ReadPropertyString('Targets'), true);
         $actionInfo = [];
-        foreach ($list as $listVariable){
+        foreach ($list as $listVariable) {
             $variableID = $listVariable['VariableID'];
-            if (/*HasAction($variableID)*/true) { //TODO FIXME: Version date
+            if (!HasAction($variableID)) {
                 $this->LogMessage(sprintf($this->Translate('The variable with ID %s has no valid action.'), $listVariable['VariableID']), 10204);
                 $actionInfo[] = $variableID;
             }
         }
-        if (sizeof($actionInfo) > 0) {
+        if (count($actionInfo) > 0) {
             $caption = $this->Translate('The following variables have no action and therefore cannot be switched:');
             foreach ($actionInfo as $varID) {
                 $caption .= "\n - " . IPS_GetLocation($varID);
@@ -236,7 +236,7 @@ class AnwesenheitsSimulation extends IPSModule
 
         return [];
     }
-    
+
     //Fetches the needed SimulationData for a whole day
     public function UpdateData()
     {
