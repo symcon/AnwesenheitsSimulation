@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-include __DIR__ . '/TestBase.php';
+include_once __DIR__ . '/TestBase.php';
 
 class LegacyListTest extends TestBase
 {

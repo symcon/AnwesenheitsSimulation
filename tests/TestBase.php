@@ -7,9 +7,9 @@ define('VAR_INT', 1);
 define('VAR_FLOAT', 2);
 define('VAR_STRING', 3);
 
-include __DIR__ . '/stubs/GlobalStubs.php';
-include __DIR__ . '/stubs/KernelStubs.php';
-include __DIR__ . '/stubs/ModuleStubs.php';
+include_once __DIR__ . '/stubs/GlobalStubs.php';
+include_once __DIR__ . '/stubs/KernelStubs.php';
+include_once __DIR__ . '/stubs/ModuleStubs.php';
 
 use PHPUnit\Framework\TestCase;
 
