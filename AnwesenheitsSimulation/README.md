@@ -54,7 +54,7 @@ Simulation aktiv        | Boolean   | Zeigt an ob ob die Simulation aktiviert is
 SimulationData          | String    | Der String beinhaltet die WDDX-kodierten Tagesdaten, welche genutzt wird um die Varaiblen zu schalten.
 Simulationsquelle (Tag) | String    | Der String beinhaltet das Datum, nach dem die Simulationsdaten ausgewählt wurden.
 UpdateTargetsTimer      | Timer     | Zum automatisch berechneten Zeitpunkt werden alle Variablen geschaltet/aktualisiert.
-UpdateTargetTimer       | Timer     | Zum automatisch berechneten Zeitpunkt werden die Tagesdaten um 00:00:01 für den neuen Tag berechnet.
+MidnightTimer           | Timer     | Zum automatisch berechneten Zeitpunkt werden die Tagesdaten um 00:00:01 für den neuen Tag berechnet.
 
 Es werden keine zusätzlichen Profile benötigt.
 
