@@ -50,7 +50,7 @@ class EdgeCaseTest extends TestBase
             ]
         ];
         AC_AddLoggedValues($archiveID, $variableID, $data);
-        $caption = json_decode(AS_GetConfigurationForm($instanceID), true)['elements'][0]['caption'];
+        $caption = json_decode(IPS_GetConfigurationForm($instanceID), true)['elements'][0]['caption'];
         echo PHP_EOL . $caption . PHP_EOL;
         RequestAction($activeID, true);
 
