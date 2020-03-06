@@ -15,9 +15,8 @@ class AnwesenheitsSimulationTest extends TestBase
         $archiveID = $this->ArchiveControlID;
         $instanceID = $this->AnwesenheitsSimulationID;
         $activeID = IPS_GetObjectIDByIdent('Active', $instanceID);
-        //Setting cutom time for testing
+        //Setting custom time for testing
         AS_setTime($instanceID, strtotime('May 25 1977 12:00'));
-        IPS_EnableDebug($instanceID, 1);
 
         //Configuration
         IPS_SetConfiguration($instanceID, json_encode(
