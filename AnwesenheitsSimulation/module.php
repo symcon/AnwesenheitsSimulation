@@ -116,7 +116,7 @@ class AnwesenheitsSimulation extends IPSModule
             }
             return $caption;
         }
-        return 0;
+        return false;
     }
 
     public function SetSimulation(bool $SwitchOn)
