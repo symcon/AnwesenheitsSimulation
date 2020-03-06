@@ -54,12 +54,4 @@ class TestBase extends TestCase
         }
         return $variableID;
     }
-
-    protected function CreateLink(int $TargetID = 0, int $ParentID = 0)
-    {
-        $id = IPS_CreateLink();
-        IPS_SetParent($id, $ParentID);
-        IPS_SetLinkTargetID($id, $TargetID);
-        return $id;
-    }
 }
