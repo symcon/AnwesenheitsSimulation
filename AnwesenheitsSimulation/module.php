@@ -255,7 +255,7 @@ class AnwesenheitsSimulation extends IPSModule
         $simulationData = $this->GetDataArray(array_merge($weekDays, $singleDays), $targetIDs);
         $this->SendDebug('SimulationData', print_r($simulationData, true), 0);
         if (count($simulationData) == 0) {
-            $this->SetValue('SimulationDay', 'Zu wenig Daten!');
+            $this->SetValue('SimulationDay', $this->Translate('Not enough data!'));
         } else {
             $this->SetValue('SimulationDay', $simulationData['Date']);
             $this->SetValue('SimulationData', wddx_serialize_value($simulationData['Data']));
