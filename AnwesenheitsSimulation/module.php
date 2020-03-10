@@ -235,7 +235,7 @@ class AnwesenheitsSimulation extends IPSModule
         if (count($simulationData) == 0) {
             $this->SetValue('SimulationDay', 'Zu wenig Daten!');
         } else {
-            SetValue($this->GetIDForIdent('SimulationDay'), $simulationData['Date']);
+            $this->SetValue('SimulationDay', $simulationData['Date']);
             $this->WriteAttributeString('SimulationData', json_encode($simulationData['Data']));
         }
 
