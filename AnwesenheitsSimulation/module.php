@@ -71,13 +71,10 @@ class AnwesenheitsSimulation extends IPSModule
             if ($simulationDataAttr == '[]' && function_exists('wddx_deserialize')) {
                 $simulationData = json_encode(wddx_deserialize(GetValue($simulationDataID)));
                 $this->WriteAttributeString('SimulationData', $simulationData);
-                $this->UnregisterVariable('SimulationData');
             } elseif ($simulationDataAttr == '[]' && !function_exists('wddx_deserialize')) {
                 $this->UpdateData();
-                $this->UnregisterVariable('SimulationData');
-            } else {
-                $this->UnregisterVariable('SimulationData');
             }
+            $this->UnregisterVariable('SimulationData');
         }
         //Adding references
         foreach ($this->GetReferenceList() as $referenceID) {
