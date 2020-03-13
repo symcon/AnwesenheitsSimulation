@@ -10,7 +10,13 @@
 			"Last value": "Letzter Wert",
 			"Since": "Seit",
 			"Next value": "Nächster Wert",
-			"At": "Um"
+			"At": "Um",
+			"The variable with ID %s has no valid action.": "Die Variable mit der ID %s hat keine gültige Aktion",
+			"The following variables have no action and therefore cannot be switched:": "Die folgenden Variablen haben keine Aktion und können somit nicht geschaltet werden:",
+			"Variables": "Variablen",
+			"Variable": "Variable",
+			"Name (optional)": "Name (optional)",
+			"Not enough data!": "Zu wenig Daten!"
 		}
 	}
 }
