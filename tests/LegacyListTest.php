@@ -9,8 +9,8 @@ class LegacyListTest extends TestBase
     public function testListConversion()
     {
         //Variables
-        $boolID = $this->CreateActionVariable(VAR_BOOL, 'Booleaan');
-        $intID = $this->CreateActionVariable(VAR_INT, 'Integer');
+        $boolID = $this->CreateActionVariable(VAR_BOOL);
+        $intID = $this->CreateActionVariable(VAR_INT);
 
         //Instances
         $instanceID = $this->AnwesenheitsSimulationID;

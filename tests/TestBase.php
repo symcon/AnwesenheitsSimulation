@@ -42,16 +42,12 @@ class TestBase extends TestCase
         parent::setUp();
     }
 
-    protected function CreateActionVariable(int $VariableType, string $Ident, bool $Action = true)
+    protected function CreateActionVariable(int $VariableType)
     {
         $variableID = IPS_CreateVariable($VariableType);
-        IPS_SetIdent($variableID, $Ident);
-        IPS_SetName($variableID, $Ident);
-        if ($Action) {
-            $scriptID = IPS_CreateScript(0 /* PHP */);
-            IPS_SetScriptContent($scriptID, 'SetValue($_IPS[\'VARIABLE\'], $_IPS[\'VALUE\']);');
-            IPS_SetVariableCustomAction($variableID, $scriptID);
-        }
+        $scriptID = IPS_CreateScript(0 /* PHP */);
+        IPS_SetScriptContent($scriptID, 'SetValue($_IPS[\'VARIABLE\'], $_IPS[\'VALUE\']);');
+        IPS_SetVariableCustomAction($variableID, $scriptID);
         return $variableID;
     }
 }

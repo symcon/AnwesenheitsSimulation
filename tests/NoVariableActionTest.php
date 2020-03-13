@@ -9,7 +9,8 @@ class NoVariableActionTest extends TestBase
     public function testNoVariableAction()
     {
         //Variables
-        $variableID = $this->CreateActionVariable(VAR_INT, 'Variable1', false);
+        $variableID = IPS_CreateVariable(VAR_INT);
+        IPS_SetName($variableID, 'Variable1');
 
         //Instances
         $instanceID = $this->AnwesenheitsSimulationID;

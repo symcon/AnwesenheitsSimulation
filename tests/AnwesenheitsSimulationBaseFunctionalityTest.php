@@ -9,7 +9,7 @@ class AnwesenheitsSimulationTest extends TestBase
     public function testBaseFunctionality()
     {
         //Variables
-        $variableID = $this->CreateActionVariable(VAR_INT, 'Variable1');
+        $variableID = $this->CreateActionVariable(VAR_INT);
 
         //Instances
         $archiveID = $this->ArchiveControlID;
