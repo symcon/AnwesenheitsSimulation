@@ -106,7 +106,7 @@ class AnwesenheitsSimulation extends IPSModule
         } else {
             //When deactivating the simulation, kill data for simulation and deactivate timer for updating targets
             $this->SetValue('SimulationDay', 'Simulation deaktiviert');
-            $this->SetValue('SimulationData', '');
+            $this->WriteAttributeString('SimulationData', '[]');
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
             $this->SetTimerInterval('MidnightTimer', 0);
             $this->SetValue('SimulationView', 'Simulation deaktiviert');
