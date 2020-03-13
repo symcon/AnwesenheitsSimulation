@@ -1,8 +1,11 @@
 <?php
 
 declare(strict_types=1);
+
+include_once __DIR__ . '/timetest.php';
 class AnwesenheitsSimulation extends IPSModule
 {
+    use TestTime;
     public function Create()
     {
         //Never delete this line!
@@ -41,13 +44,14 @@ class AnwesenheitsSimulation extends IPSModule
         if (@$this->GetIDForIdent('UpdateDataTimer')) {
             IPS_DeleteEvent($this->GetIDForIdent('UpdateDataTimer'));
         }
+
         //Transfer links in list
         if ($this->ReadPropertyString('Targets') == '[]') {
-            $targetID = @$this->GetIDForIdent('Targets');
+            $targetCategoryID = @$this->GetIDForIdent('Targets');
 
-            if ($targetID) {
+            if ($targetCategoryID) {
                 $variables = [];
-                foreach (IPS_GetChildrenIDs($targetID) as $ChildrenID) {
+                foreach (IPS_GetChildrenIDs($targetCategoryID) as $ChildrenID) {
                     $targetID = IPS_GetLink($ChildrenID)['TargetID'];
                     $line = [
                         'VariableID' => $targetID
@@ -56,7 +60,7 @@ class AnwesenheitsSimulation extends IPSModule
                     IPS_DeleteLink($ChildrenID);
                 }
 
-                IPS_DeleteCategory($targetID);
+                IPS_DeleteCategory($targetCategoryID);
                 IPS_SetProperty($this->InstanceID, 'Targets', json_encode($variables));
                 IPS_ApplyChanges($this->InstanceID);
                 return;
@@ -68,18 +72,51 @@ class AnwesenheitsSimulation extends IPSModule
             $this->UnregisterReference($referenceID);
         }
         $targets = json_decode($this->ReadPropertyString('Targets'));
-        foreach ($targets as $targerID) {
-            $this->RegisterReference($targerID->VariableID);
+        foreach ($targets as $targetID) {
+            $this->RegisterReference($targetID->VariableID);
         }
 
         //Setting initial timer interval
         if ($this->GetValue('Active')) {
-            $starttimer = strtotime('tomorrow');
-            $this->SendDebug('TimerInterval', $starttimer, 0);
-            $this->SetTimerInterval('UpdateTargetsTimer', ($starttimer - time()) * 1000);
+            $starttimer = strtotime('tomorrow', $this->getTime());
+            $this->SendDebug('TimerInterval', strval($starttimer), 0);
+            $this->SetTimerInterval('UpdateTargetsTimer', ($starttimer - $this->getTime()) * 1000);
         } else {
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
         }
+    }
+
+    public function GetConfigurationForm()
+    {
+        //Add options to form
+        $jsonForm = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+        $noActions = $this->CheckAction();
+        if ($noActions) {
+            $jsonForm['elements'][0]['caption'] = $noActions;
+            $jsonForm['elements'][0]['visible'] = true;
+        }
+        return json_encode($jsonForm);
+    }
+
+    private function CheckAction()
+    {
+        $list = json_decode($this->ReadPropertyString('Targets'), true);
+        $actionInfo = [];
+        foreach ($list as $listVariable) {
+            $variableID = $listVariable['VariableID'];
+            if (!HasAction($variableID)) {
+                $this->LogMessage(sprintf($this->Translate('The variable with ID %s has no valid action.'), $listVariable['VariableID']), 10204);
+                $actionInfo[] = $variableID;
+            }
+        }
+        if (count($actionInfo) > 0) {
+            $caption = $this->Translate('The following variables have no action and therefore cannot be switched:');
+            foreach ($actionInfo as $varID) {
+                $caption .= "\n - " . IPS_GetLocation($varID);
+            }
+            return $caption;
+        }
+        return false;
     }
 
     public function SetSimulation(bool $SwitchOn)
@@ -145,7 +182,7 @@ class AnwesenheitsSimulation extends IPSModule
     //returns a array of the dayData of 1 Variable
     private function GetDayData($day, $targetIDs)
     {
-        $dayStart = mktime(0, 0, 0, intval(date('m')), intval(date('d')), intval(date('Y')));
+        $dayStart = mktime(0, 0, 0, intval(date('m', $this->getTime())), intval(date('d', $this->getTime())), intval(date('Y', $this->getTime())));
         $dayDiff = $day * 24 * 3600;
         $dayData = [];
         $archiveControlID = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}')[0];
@@ -206,7 +243,7 @@ class AnwesenheitsSimulation extends IPSModule
     public function UpdateData()
     {
         $targetIDs = $this->GetTargets();
-
+        $this->SendDebug('Targets', print_r($targetIDs, true), 0);
         //Tries to fetch data for a random but same weekday for the last 4 weeks
         $weekDays = [7, 14, 21, 28];
         shuffle($weekDays);
@@ -216,6 +253,7 @@ class AnwesenheitsSimulation extends IPSModule
         shuffle($singleDays);
 
         $simulationData = $this->GetDataArray(array_merge($weekDays, $singleDays), $targetIDs);
+        $this->SendDebug('SimulationData', print_r($simulationData, true), 0);
         if (count($simulationData) == 0) {
             $this->SetValue('SimulationDay', $this->Translate('Not enough data!'));
         } else {
@@ -244,14 +282,14 @@ class AnwesenheitsSimulation extends IPSModule
 
                     //Getting the value to set
                     foreach ($value as $key) {
-                        if (date('H:i:s') > $key['TimeStamp']) {
+                        if (date('H:i:s', $this->getTime()) > $key['TimeStamp']) {
                             $currentValue = $key['Value'];
                             $currentTime = $key['TimeStamp'];
                         } else {
                             $nextValue = $key['Value'];
                             $nextTime = $key['TimeStamp'];
 
-                            $nextSwitchTimestamp = min($nextSwitchTimestamp, strtotime($key['TimeStamp']));
+                            $nextSwitchTimestamp = min($nextSwitchTimestamp, strtotime($key['TimeStamp'], $this->getTime()));
                             break;
                         }
                     }
@@ -275,7 +313,7 @@ class AnwesenheitsSimulation extends IPSModule
         if ($nextSwitchTimestamp != PHP_INT_MAX) {
             $result['nextSwitchTimestamp'] = $nextSwitchTimestamp;
         }
-
+        $this->SendDebug('NextSimResult', print_r($result, true), 0);
         return $result;
     }
 
@@ -308,7 +346,7 @@ class AnwesenheitsSimulation extends IPSModule
                     }
 
                     $this->SendDebug('Action', 'Device ' . $targetID . ' will be updated!', 0);
-
+                    $this->SendDebug('RequestActionID', "$actionID", 0);
                     if (IPS_InstanceExists($actionID)) {
                         IPS_RequestAction($actionID, $o['ObjectIdent'], $targetValue);
                     } elseif (IPS_ScriptExists($actionID)) {
@@ -319,12 +357,11 @@ class AnwesenheitsSimulation extends IPSModule
         }
 
         if (isset($NextSimulationData['nextSwitchTimestamp'])) {
-            $this->SetTimerInterval('UpdateTargetsTimer', ($NextSimulationData['nextSwitchTimestamp'] - time() + 1) * 1000);
+            $this->SetTimerInterval('UpdateTargetsTimer', ($NextSimulationData['nextSwitchTimestamp'] - $this->getTime() + 1) * 1000);
         } else {
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
         }
-
-        $this->SetTimerInterval('MidnightTimer', 1000 * (strtotime('tomorrow') - time()));
+        $this->SetTimerInterval('UpdateTargetsTimer', 1000 * (strtotime('tomorrow', $this->getTime()) - $this->getTime()));
     }
 
     private function UpdateView($targetIDs, $nextSimulationData)
