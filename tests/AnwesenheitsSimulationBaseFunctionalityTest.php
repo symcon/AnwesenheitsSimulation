@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 include_once __DIR__ . '/TestBase.php';
 
-class AnwesenheitsSimulationTest extends TestBase
+class AnwesenheitsSimulationBaseFunctionalityTest extends TestBase
 {
     public function testBaseFunctionality()
     {
