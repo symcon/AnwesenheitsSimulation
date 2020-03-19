@@ -97,6 +97,11 @@ class AnwesenheitsSimulation extends IPSModule
         } else {
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
         }
+
+        if (GetValue($this->GetIDForIdent('Active'))) {
+            $this->UpdateData();
+            $this->UpdateTargets();
+        }
     }
 
     public function GetConfigurationForm()
