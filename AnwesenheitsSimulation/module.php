@@ -16,13 +16,14 @@ class AnwesenheitsSimulation extends IPSModule
         $this->RegisterPropertyInteger('ArchiveControlID', IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}')[0]);
         $this->RegisterPropertyString('Targets', '[]');
 
+        //Attributes
+        $this->RegisterAttributeString('SimulationData', '[]');
+
         //Timer
         $this->RegisterTimer('MidnightTimer', 0, 'if(AS_UpdateData($_IPS[\'TARGET\'])) {AS_UpdateTargets($_IPS[\'TARGET\']);}');
         $this->RegisterTimer('UpdateTargetsTimer', 0, 'AS_UpdateTargets($_IPS[\'TARGET\']);');
 
         //Variables
-        $this->RegisterVariableString('SimulationData', 'SimulationData', '');
-        IPS_SetHidden($this->GetIDForIdent('SimulationData'), true);
         $this->RegisterVariableString('SimulationView', $this->Translate('Simulation preview'), '~HTMLBox');
         $this->RegisterVariableString('SimulationDay', $this->Translate('Simulations source (Day)'), '');
         $this->RegisterVariableBoolean('Active', $this->Translate('Simulation active'), '~Switch');
@@ -67,6 +68,18 @@ class AnwesenheitsSimulation extends IPSModule
             }
         }
 
+        //Transfer legacy SimulationData into attribute
+        $simulationDataID = @$this->GetIDForIdent('SimulationData');
+        $simulationDataAttr = $this->ReadAttributeString('SimulationData');
+        if (($simulationDataID !== false) && (IPS_VariableExists($simulationDataID))) {
+            if ($simulationDataAttr == '[]' && function_exists('wddx_deserialize')) {
+                $simulationData = json_encode(wddx_deserialize(GetValue($simulationDataID)));
+                $this->WriteAttributeString('SimulationData', $simulationData);
+            } elseif ($simulationDataAttr == '[]' && !function_exists('wddx_deserialize')) {
+                $this->UpdateData();
+            }
+            $this->UnregisterVariable('SimulationData');
+        }
         //Adding references
         foreach ($this->GetReferenceList() as $referenceID) {
             $this->UnregisterReference($referenceID);
@@ -130,7 +143,7 @@ class AnwesenheitsSimulation extends IPSModule
         } else {
             //When deactivating the simulation, kill data for simulation and deactivate timer for updating targets
             $this->SetValue('SimulationDay', 'Simulation deaktiviert');
-            $this->SetValue('SimulationData', '');
+            $this->WriteAttributeString('SimulationData', '[]');
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
             $this->SetTimerInterval('MidnightTimer', 0);
             $this->SetValue('SimulationView', 'Simulation deaktiviert');
@@ -258,7 +271,7 @@ class AnwesenheitsSimulation extends IPSModule
             $this->SetValue('SimulationDay', $this->Translate('Not enough data!'));
         } else {
             $this->SetValue('SimulationDay', $simulationData['Date']);
-            $this->SetValue('SimulationData', wddx_serialize_value($simulationData['Data']));
+            $this->WriteAttributeString('SimulationData', json_encode($simulationData['Data']));
         }
 
         return count($simulationData) > 0;
@@ -266,7 +279,7 @@ class AnwesenheitsSimulation extends IPSModule
 
     public function GetNextSimulationData()
     {
-        $simulationData = wddx_deserialize(GetValueString(IPS_GetObjectIDByIdent('SimulationData', $this->InstanceID)));
+        $simulationData = json_decode($this->ReadAttributeString('SimulationData'), true);
         $nextSwitchTimestamp = PHP_INT_MAX;
         $result = [];
 
