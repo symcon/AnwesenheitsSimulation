@@ -71,7 +71,7 @@ class AnwesenheitsSimulation extends IPSModule
         //Transfer legacy SimulationData into attribute
         $simulationDataID = @$this->GetIDForIdent('SimulationData');
         $simulationDataAttr = $this->ReadAttributeString('SimulationData');
-        if ($simulationDataID != false && IPS_VariableExists($simulationDataID)) {
+        if (($simulationDataID !== false) && (IPS_VariableExists($simulationDataID))) {
             if ($simulationDataAttr == '[]' && function_exists('wddx_deserialize')) {
                 $simulationData = json_encode(wddx_deserialize(GetValue($simulationDataID)));
                 $this->WriteAttributeString('SimulationData', $simulationData);
