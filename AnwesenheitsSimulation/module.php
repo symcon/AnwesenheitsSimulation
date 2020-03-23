@@ -162,7 +162,7 @@ class AnwesenheitsSimulation extends IPSModule
     {
         $targets = json_decode($this->ReadPropertyString('Targets'), true);
         foreach ($targets as $target) {
-            if (IPS_VariableExists($target['VariableID'])) {
+            if (($target['VariableID'] == $VariableID) && IPS_VariableExists($target['VariableID'])) {
                 if (!isset($target['Name']) || $target['Name'] == '') {
                     return IPS_GetName($VariableID);
                 } else {
