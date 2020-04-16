@@ -33,7 +33,7 @@ Ist auch innerhalb dieser 30 Tage kein gültiger Tagesdatensatz vorhanden, ist k
 
 ### 4. Einrichten der Instanzen in IP-Symcon
 
-- Unter "Instanz hinzufügen" ist das 'AnwesenheitsSimulation'-Modul unter dem Hersteller '(Gerät)' aufgeführt.  
+- Unter "Instanz hinzufügen" kann das 'AnwesenheitsSimulation'-Modul mithilfe der Schnellsuche gefunden werden.  
 - Alle zu schaltenden Variablen müssen der Variablen Liste in der Instanzkonfiguration hinzugefügt werden.
 
 __Konfigurationsseite__:
