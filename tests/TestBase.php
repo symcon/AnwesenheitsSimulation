@@ -34,7 +34,7 @@ class TestBase extends TestCase
             IPS\ProfileManager::createVariableProfile('~HTMLBox', 3);
         }
         if (!IPS\ProfileManager::variableProfileExists('~Switch')) {
-            IPS\ProfileManager::createVariableProfile('~Switch', 3);
+            IPS\ProfileManager::createVariableProfile('~Switch', 0);
         }
         $this->ArchiveControlID = IPS_CreateInstance('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
         $this->AnwesenheitsSimulationID = IPS_CreateInstance('{87F47896-DD54-442D-94FD-9990BD8D9F54}');
