@@ -56,9 +56,9 @@ class GetValueFormattedTest extends TestBase
         ];
         AC_AddLoggedValues($archiveID, $variableID, $data);
 
-        //Activating instance and checking outcome
+        //Activating instance and comparing SimulationView content
         RequestAction($activeID, true);
-        $expected = "<table style='width: 100%; border-collapse: collapse;'><tr><td style='padding: 5px; font-weight: bold;'>Actor</td><td style='padding: 5px; font-weight: bold;'>Last value</td><td style='padding: 5px; font-weight: bold;'>Since</td><td style='padding: 5px; font-weight: bold;'>Next value</td><td style='padding: 5px; font-weight: bold;'>At</td></tr><tr style='border-top: 1px solid rgba(255,255,255,0.10);'><td style='padding: 5px;'>Var1</td><td style='padding: 5px;'>16%</td><td style='padding: 5px;'>11:00:00</td><td style='padding: 5px;'>9%</td><td style='padding: 5px;'>15:00:00</td></tr></table>";
+        $expected = "<table style='width: 100%; border-collapse: collapse;'><tr><td style='padding: 5px; font-weight: bold;'>Actor</td><td style='padding: 5px; font-weight: bold;'>Last value</td><td style='padding: 5px; font-weight: bold;'>Since</td><td style='padding: 5px; font-weight: bold;'>Next value</td><td style='padding: 5px; font-weight: bold;'>At</td></tr><tr style='border-top: 1px solid rgba(255,255,255,0.10);'><td style='padding: 5px;'>Var1</td><td style='padding: 5px;'>Prefix 16 %</td><td style='padding: 5px;'>11:00:00</td><td style='padding: 5px;'>Prefix 9 %</td><td style='padding: 5px;'>15:00:00</td></tr></table>";
         $actual = GetValue(IPS_GetObjectIDByIdent('SimulationView', $instanceID));
         $this->assertEquals($expected, $actual);
     }
