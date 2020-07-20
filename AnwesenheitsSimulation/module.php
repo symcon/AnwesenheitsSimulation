@@ -400,15 +400,13 @@ class AnwesenheitsSimulation extends IPSModule
 
         foreach ($targetIDs as $targetID) {
             $name = $this->GetName($targetID);
-
-            $nextValueFormatted = '-';
-            if ($nextSimulationData[$targetID]['nextValue'] != '-') {
-                $nextValueFormatted = GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['nextValue']);
-            }
-
             $html .= "<tr style='border-top: 1px solid rgba(255,255,255,0.10);'>";
             $html .= "<td style='padding: 5px;'>" . $name . '</td>';
             if (isset($nextSimulationData[$targetID])) {
+                $nextValueFormatted = '-';
+                if ($nextSimulationData[$targetID]['nextValue'] != '-') {
+                    $nextValueFormatted = GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['nextValue']);
+                }
                 $html .= "<td style='padding: 5px;'>" . GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['currentValue']) . '</td>';
                 $html .= "<td style='padding: 5px;'>" . $nextSimulationData[$targetID]['currentTime'] . '</td>';
                 $html .= "<td style='padding: 5px;'>" . $nextValueFormatted . '</td>';
