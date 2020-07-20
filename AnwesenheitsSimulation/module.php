@@ -384,10 +384,9 @@ class AnwesenheitsSimulation extends IPSModule
 
     private function UpdateView($targetIDs, $nextSimulationData)
     {
-
         if ($this->CheckAction()) {
             return;
-        } 
+        }
 
         $html = "<table style='width: 100%; border-collapse: collapse;'>";
         $html .= '<tr>';
