@@ -16,7 +16,8 @@
 			"Variables": "Variablen",
 			"Variable": "Variable",
 			"Name (optional)": "Name (optional)",
-			"Not enough data!": "Zu wenig Daten!"
+			"Not enough data!": "Zu wenig Daten!",
+			"No Action": "Keine Aktion"
 		}
 	}
 }

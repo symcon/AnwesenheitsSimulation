@@ -384,10 +384,6 @@ class AnwesenheitsSimulation extends IPSModule
 
     private function UpdateView($targetIDs, $nextSimulationData)
     {
-        if ($this->CheckAction()) {
-            return;
-        }
-
         $html = "<table style='width: 100%; border-collapse: collapse;'>";
         $html .= '<tr>';
         $html .= "<td style='padding: 5px; font-weight: bold;'>" . $this->Translate('Actor') . '</td>';
@@ -403,15 +399,18 @@ class AnwesenheitsSimulation extends IPSModule
             $html .= "<td style='padding: 5px;'>" . $name . '</td>';
             if (isset($nextSimulationData[$targetID])) {
                 $nextValueFormatted = '-';
-                if ($nextSimulationData[$targetID]['nextValue'] != '-') {
+                if ($nextSimulationData[$targetID]['nextValue'] !== '-') {
                     $nextValueFormatted = GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['nextValue']);
+                }
+                if (!HasAction($targetID)) {
+                    $nextValueFormatted = $this->Translate('<span style="color:red">' . $this->Translate('No Action') . '</span>');
                 }
                 $html .= "<td style='padding: 5px;'>" . GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['currentValue']) . '</td>';
                 $html .= "<td style='padding: 5px;'>" . $nextSimulationData[$targetID]['currentTime'] . '</td>';
                 $html .= "<td style='padding: 5px;'>" . $nextValueFormatted . '</td>';
                 $html .= "<td style='padding: 5px;'>" . $nextSimulationData[$targetID]['nextTime'] . '</td>';
             } else {
-                $html .= "<td style='padding: 5px;'>0</td>";
+                $html .= "<td style='padding: 5px;'>-</td>";
                 $html .= "<td style='padding: 5px;'>00:00</td>";
                 $html .= "<td style='padding: 5px;'>-</td>";
                 $html .= "<td style='padding: 5px;'>-</td>";
