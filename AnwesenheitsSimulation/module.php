@@ -397,13 +397,13 @@ class AnwesenheitsSimulation extends IPSModule
             $name = $this->GetName($targetID);
             $html .= "<tr style='border-top: 1px solid rgba(255,255,255,0.10);'>";
             $html .= "<td style='padding: 5px;'>" . $name . '</td>';
+            $nextValueFormatted = '-';
+            if (!HasAction($targetID)) {
+                $nextValueFormatted = $this->Translate('<span style="color:red">' . $this->Translate('No Action') . '</span>');
+            }
             if (isset($nextSimulationData[$targetID])) {
-                $nextValueFormatted = '-';
                 if ($nextSimulationData[$targetID]['nextValue'] !== '-') {
                     $nextValueFormatted = GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['nextValue']);
-                }
-                if (!HasAction($targetID)) {
-                    $nextValueFormatted = $this->Translate('<span style="color:red">' . $this->Translate('No Action') . '</span>');
                 }
                 $html .= "<td style='padding: 5px;'>" . GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['currentValue']) . '</td>';
                 $html .= "<td style='padding: 5px;'>" . $nextSimulationData[$targetID]['currentTime'] . '</td>';
@@ -412,7 +412,7 @@ class AnwesenheitsSimulation extends IPSModule
             } else {
                 $html .= "<td style='padding: 5px;'>-</td>";
                 $html .= "<td style='padding: 5px;'>00:00</td>";
-                $html .= "<td style='padding: 5px;'>-</td>";
+                $html .= "<td style='padding: 5px;'>$nextValueFormatted</td>";
                 $html .= "<td style='padding: 5px;'>-</td>";
             }
             $html .= '</tr>';
