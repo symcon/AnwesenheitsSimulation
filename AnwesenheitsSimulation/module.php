@@ -396,24 +396,27 @@ class AnwesenheitsSimulation extends IPSModule
         foreach ($targetIDs as $targetID) {
             $name = $this->GetName($targetID);
             $html .= "<tr style='border-top: 1px solid rgba(255,255,255,0.10);'>";
-            $html .= "<td style='padding: 5px;'>" . $name . '</td>';
-            $nextValueFormatted = '-';
-            if (!HasAction($targetID)) {
-                $nextValueFormatted = $this->Translate('<span style="color:red">' . $this->Translate('No Action') . '</span>');
-            }
+
+            $tableContent = [
+                'name'         => $name,
+                'currentValue' => '-',
+                'currentTime'  => '00:00',
+                'nextValue'    => '-',
+                'nextTime'     => '-'
+            ];
+
             if (isset($nextSimulationData[$targetID])) {
-                if ($nextSimulationData[$targetID]['nextValue'] !== '-') {
-                    $nextValueFormatted = GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['nextValue']);
-                }
-                $html .= "<td style='padding: 5px;'>" . GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['currentValue']) . '</td>';
-                $html .= "<td style='padding: 5px;'>" . $nextSimulationData[$targetID]['currentTime'] . '</td>';
-                $html .= "<td style='padding: 5px;'>" . $nextValueFormatted . '</td>';
-                $html .= "<td style='padding: 5px;'>" . $nextSimulationData[$targetID]['nextTime'] . '</td>';
-            } else {
-                $html .= "<td style='padding: 5px;'>-</td>";
-                $html .= "<td style='padding: 5px;'>00:00</td>";
-                $html .= "<td style='padding: 5px;'>$nextValueFormatted</td>";
-                $html .= "<td style='padding: 5px;'>-</td>";
+                $tableContent['currentValue'] = GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['currentValue']);
+                $tableContent['currentTime'] = $nextSimulationData[$targetID]['currentTime'];
+                $tableContent['nextValue'] = GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['nextValue']);
+                $tableContent['nextTime'] = $nextSimulationData[$targetID]['nextTime'];
+            }
+            if (!HasAction($targetID)) {
+                $tableContent['nextValue'] = '<span style="color:red">' . $this->Translate('No Action') . '</span>';
+            }
+
+            foreach ($tableContent as $element => $value) {
+                $html .= "<td style='padding: 5px;'>$value</td>";
             }
             $html .= '</tr>';
         }
