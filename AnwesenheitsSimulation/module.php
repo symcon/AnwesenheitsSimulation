@@ -408,8 +408,10 @@ class AnwesenheitsSimulation extends IPSModule
             if (isset($nextSimulationData[$targetID])) {
                 $tableContent['currentValue'] = GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['currentValue']);
                 $tableContent['currentTime'] = $nextSimulationData[$targetID]['currentTime'];
-                $tableContent['nextValue'] = GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['nextValue']);
                 $tableContent['nextTime'] = $nextSimulationData[$targetID]['nextTime'];
+                if ($nextSimulationData[$targetID]['nextValue'] !== '-') {
+                    $tableContent['nextValue'] = GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['nextValue']);
+                }
             }
             if (!HasAction($targetID)) {
                 $tableContent['nextValue'] = '<span style="color:red">' . $this->Translate('No Action') . '</span>';
