@@ -41,6 +41,7 @@ __Konfigurationsseite__:
 
 Name          | Beschreibung
 ------------- | ---------------------------------
+Variablen     | Eine Liste der Variablen, welche für die Simulation der Anwesenheit genuzt werden sollen. Die hinzugefügten Variablen benötigen eine Aktion und müssen geloggt sein.
 Mindestanzahl | Dies beschreibt die durchschnittliche Mindestanzahl von Variablenschaltungen aller ausgewählten Variablen, die vorhanden sein müssen.
 
 ### 5. Statusvariablen und Profile
@@ -49,11 +50,9 @@ Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzeln
 
 Name                    | Typ       | Beschreibung
 ----------------------- | --------- | ----------------
-Targets (Simulation)    | Kategorie | Beinhaltet alle verlinkten Variablen, welche bei der Simulation beachtet werden sollen. (Nur Links erlaubt)
 Simulation aktiv        | Boolean   | Zeigt an ob ob die Simulation aktiviert ist oder nicht. True = Aktiviert; False = Deaktiviert;
 Simulationsquelle (Tag) | String    | Der String beinhaltet das Datum, nach dem die Simulationsdaten ausgewählt wurden.
-UpdateTargetsTimer      | Timer     | Zum automatisch berechneten Zeitpunkt werden alle Variablen geschaltet/aktualisiert.
-MidnightTimer           | Timer     | Um 00:00:01 werden alle Daten für den neuen Tag berechnet.
+Simulationsvorschau     | String    | Zeigt eine Tabelle welche eine Übersicht über die zukünftigen Schaltvorgänge gibt.
 
 Es werden keine zusätzlichen Profile benötigt.
 
@@ -62,6 +61,7 @@ Es werden keine zusätzlichen Profile benötigt.
 Über das WebFront kann die Simulation de-/aktiviert werden.  
 Es wird zusätzlich die Information angezeigt, welcher Tag zur Simulation genutzt wird.  
 Falls nicht genügend oder ungültige Daten vorhanden sind, wird dieses ebenfalls hier angezeigt.
+Es wird eine Liste mit allen ausgewählten Variablen angezeigt, welche den aktuellen und nächsten Wert, sowie die Uhrzeit der Schaltung beinhaltet. 
 
 ### 7. PHP-Befehlsreferenz
 
