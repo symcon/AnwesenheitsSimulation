@@ -25,6 +25,7 @@ class AnwesenheitsSimulation extends IPSModule
 
         //Variables
         $this->RegisterVariableString('SimulationView', $this->Translate('Simulation preview'), '~HTMLBox');
+        $this->RegisterVariableString('NextTrigger', $this->Translate('Next Trigger'), '');
         $this->RegisterVariableString('SimulationDay', $this->Translate('Simulations source (Day)'), '');
         $this->RegisterVariableBoolean('Active', $this->Translate('Simulation active'), '~Switch');
         $this->EnableAction('Active');
@@ -150,6 +151,7 @@ class AnwesenheitsSimulation extends IPSModule
             $this->SetValue('SimulationDay', 'Simulation deaktiviert');
             $this->WriteAttributeString('SimulationData', '[]');
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
+            $this->SetValue('NextTrigger'), 'Keiner');
             $this->SetTimerInterval('MidnightTimer', 0);
             $this->SetValue('SimulationView', 'Simulation deaktiviert');
             IPS_SetHidden($this->GetIDForIdent('SimulationView'), true);
@@ -376,8 +378,10 @@ class AnwesenheitsSimulation extends IPSModule
 
         if (isset($NextSimulationData['nextSwitchTimestamp'])) {
             $this->SetTimerInterval('UpdateTargetsTimer', ($NextSimulationData['nextSwitchTimestamp'] - $this->getTime() + 1) * 1000);
+            $this->SetValue('NextTrigger'), (date("H:i:s", ($NextSimulationData['nextSwitchTimestamp']))));
         } else {
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
+            $this->SetValue('NextTrigger'), 'Keiner');
         }
         $this->SetTimerInterval('UpdateTargetsTimer', 1000 * (strtotime('tomorrow', $this->getTime()) - $this->getTime()));
     }
