@@ -19,7 +19,7 @@ jobs:
           php-version: '7.3' #This version is currently used by Symcon | In later versions the tested wddx function is removed
 
     - name: Install latest PHPUnit
-      run: wget https://phar.phpunit.de/phpunit.phar
+      run: wget https://phar.phpunit.de/phpunit-9.2.6.phar #Later versions will lead to the error: 'zend_mm_heap corrupted'
 
     - name: Run Tests
       run: phpdbg -qrr phpunit.phar tests --configuration tests/phpunit.xml
