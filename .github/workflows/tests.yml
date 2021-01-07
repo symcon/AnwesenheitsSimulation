@@ -5,21 +5,27 @@ on: [push, pull_request]
 jobs:
 
   test:
- 
     runs-on: ubuntu-latest
- 
     steps:
-    - uses: actions/checkout@master
-      with:
+      - name: Checkout module
+        uses: actions/checkout@master
+        with:
           submodules: true
-  
-    - name: Install required PHP version
-      uses: shivammathur/setup-php@v1
-      with:
+      - name: Run tests 
+        uses: symcon/action-tests@master
+
+  test-legacy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout module
+        uses: actions/checkout@master
+        with:
+          submodules: true
+      - name: Install required PHP version
+        uses: shivammathur/setup-php@v2
+        with:
           php-version: '7.3' #This version is currently used by Symcon | In later versions the tested wddx function is removed
-
-    - name: Install latest PHPUnit
-      run: wget https://phar.phpunit.de/phpunit-9.2.6.phar #Later versions will lead to the error: 'zend_mm_heap corrupted'
-
-    - name: Run Tests
-      run: phpdbg -qrr phpunit.phar tests --configuration tests/phpunit.xml
+      - name: Run tests 
+        uses: symcon/action-tests@master
+        with:
+          phpunit-version: '-9.2.6'
