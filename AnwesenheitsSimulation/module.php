@@ -118,12 +118,12 @@ class AnwesenheitsSimulation extends IPSModule
             } elseif (!HasAction($target['VariableID'])) {
                 $jsonForm['elements'][0]['values'][] = [
                     'rowColor' => '#FFC0C0',
-                    'Status'   => $this->Translate('No Logging')
+                    'Status'   => $this->Translate('No Action')
                 ];
             } elseif (!AC_GetLoggingStatus($archiveControlID, $target['VariableID'])) {
                 $jsonForm['elements'][0]['values'][] = [
                     'rowColor' => '#FFC0C0',
-                    'Status'   => $this->Translate('No Action')
+                    'Status'   => $this->Translate('No Logging')
                 ];
             } else {
                 $jsonForm['elements'][0]['values'][] = [
