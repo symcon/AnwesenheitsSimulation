@@ -17,7 +17,9 @@
 			"Variable": "Variable",
 			"Name (optional)": "Name (optional)",
 			"Not enough data!": "Zu wenig Daten!",
-			"No Action": "Keine Aktion"
+			"No Action": "Keine Aktion",
+			"No Logging": "Nicht geloggt",
+			"Doesn't Exist": "Existiert  nicht"
 		}
 	}
 }

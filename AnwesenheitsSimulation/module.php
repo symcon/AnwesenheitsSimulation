@@ -106,35 +106,32 @@ class AnwesenheitsSimulation extends IPSModule
 
     public function GetConfigurationForm()
     {
-        //Add options to form
         $jsonForm = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-        $noActions = $this->CheckAction();
-        if ($noActions) {
-            $jsonForm['elements'][0]['caption'] = $noActions;
-            $jsonForm['elements'][0]['visible'] = true;
+        $archiveControlID = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}')[0];
+        $targets = json_decode($this->ReadPropertyString('Targets'), true);
+        foreach ($targets as $target) {
+            if (!IPS_VariableExists($target['VariableID'])) {
+                $jsonForm['elements'][0]['values'][] = [
+                    'rowColor' => '#FFC0C0',
+                    'Status'   => $this->Translate('Doesn\'t Exist')
+                ];
+            } elseif (!HasAction($target['VariableID'])) {
+                $jsonForm['elements'][0]['values'][] = [
+                    'rowColor' => '#FFC0C0',
+                    'Status'   => $this->Translate('No Logging')
+                ];
+            } elseif (!AC_GetLoggingStatus($archiveControlID, $target['VariableID'])) {
+                $jsonForm['elements'][0]['values'][] = [
+                    'rowColor' => '#FFC0C0',
+                    'Status'   => $this->Translate('No Action')
+                ];
+            } else {
+                $jsonForm['elements'][0]['values'][] = [
+                    'Status' => 'OK',
+                ];
+            }
         }
         return json_encode($jsonForm);
-    }
-
-    private function CheckAction()
-    {
-        $list = json_decode($this->ReadPropertyString('Targets'), true);
-        $actionInfo = [];
-        foreach ($list as $listVariable) {
-            $variableID = $listVariable['VariableID'];
-            if (!HasAction($variableID)) {
-                $this->LogMessage(sprintf($this->Translate('The variable with ID %s has no valid action.'), $listVariable['VariableID']), 10204);
-                $actionInfo[] = $variableID;
-            }
-        }
-        if (count($actionInfo) > 0) {
-            $caption = $this->Translate('The following variables have no action and therefore cannot be switched:');
-            foreach ($actionInfo as $varID) {
-                $caption .= "\n - " . IPS_GetLocation($varID);
-            }
-            return $caption;
-        }
-        return false;
     }
 
     public function SetSimulation(bool $SwitchOn)
@@ -413,8 +410,11 @@ class AnwesenheitsSimulation extends IPSModule
                     $tableContent['nextValue'] = GetValueFormattedEx($targetID, $nextSimulationData[$targetID]['nextValue']);
                 }
             }
+            $archiveControlID = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}')[0];
             if (!HasAction($targetID)) {
                 $tableContent['nextValue'] = '<span style="color:red">' . $this->Translate('No Action') . '</span>';
+            } elseif (!AC_GetLoggingStatus($archiveControlID, $targetID)) {
+                $tableContent['nextValue'] = '<span style="color:red">' . $this->Translate('No Logging') . '</span>';
             }
 
             foreach ($tableContent as $element => $value) {
