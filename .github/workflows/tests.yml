@@ -28,4 +28,4 @@ jobs:
       - name: Run tests 
         uses: symcon/action-tests@master
         with:
-          phpunit-version: '-9.2.6'
+          phpunit-version: '9.2.6'
