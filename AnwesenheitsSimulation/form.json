@@ -29,7 +29,8 @@
         {
           "caption": "Status",
           "name": "Status",
-          "width": "150px"
+          "width": "150px",
+          "add": ""
         }
             ]
         },
