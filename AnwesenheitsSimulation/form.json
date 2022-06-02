@@ -6,7 +6,8 @@
             "caption": "Variables",
             "add": true,
             "delete": true,
-            "columns": [{
+            "columns": [
+                {
                     "caption": "Variable",
                     "name": "VariableID",
                     "width": "auto",
@@ -26,12 +27,12 @@
                         "type": "ValidationTextBox"
                     }
                 },
-        {
-          "caption": "Status",
-          "name": "Status",
-          "width": "150px",
-          "add": ""
-        }
+                {
+                    "caption": "Status",
+                    "name": "Status",
+                    "width": "150px",
+                    "add": ""
+                }
             ]
         },
         {
