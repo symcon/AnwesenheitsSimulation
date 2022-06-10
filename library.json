@@ -4,7 +4,7 @@
 	"name": "AnwesenheitsSimulation",
 	"url": "https://www.symcon.de",
 	"compatibility": {
-		"version": "5.5"
+		"version": "6.0"
 	},
 	"version": "1.2",
 	"build": 0,
