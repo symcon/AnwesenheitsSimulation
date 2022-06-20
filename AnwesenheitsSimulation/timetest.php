@@ -17,7 +17,8 @@ if (defined('PHPUNIT_TESTSUITE')) {
             $this->currentTime = $Time;
         }
 
-        public function GetTimerInterval($Ident) {
+        public function GetTimerInterval(string $Ident)
+        {
             return parent::GetTimerInterval($Ident);
         }
     }
