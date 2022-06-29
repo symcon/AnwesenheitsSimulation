@@ -1,35 +1,48 @@
 {
-  "elements":
-  [
-    {"type": "Label", "name": "InfoDisplay", "caption": "", "visible": false},
-  {
-    "type": "List",
-    "name": "Targets",
-    "caption": "Variables",
-    "add": true,
-    "delete": true,
-    "columns": [
-      {
-      "caption": "Variable",
-      "name": "VariableID",
-      "width": "auto",
-      "add": 0,
-      "edit": {
-        "type": "SelectVariable"
-      }
-      },
-      {
-        "caption": "Name (optional)",
-        "name": "Name",
-        "width": "200px",
-        "add": "",
-        "edit": {
-          "type": "ValidationTextBox"
-        }
+    "elements": [
+        {
+            "type": "List",
+            "name": "Targets",
+            "caption": "Variables",
+            "add": true,
+            "delete": true,
+            "columns": [
+                {
+                    "caption": "Variable",
+                    "name": "VariableID",
+                    "width": "auto",
+                    "add": 0,
+                    "edit": {
+                        "type": "SelectVariable",
+                        "requiredLogging": 1,
+                        "requiredAction": 1
+                    }
+                },
+                {
+                    "caption": "Name (optional)",
+                    "name": "Name",
+                    "width": "200px",
+                    "add": "",
+                    "edit": {
+                        "type": "ValidationTextBox"
+                    }
+                },
+                {
+                    "caption": "Status",
+                    "name": "Status",
+                    "width": "150px",
+                    "add": ""
+                }
+            ]
+        },
+        {
+            "type": "Label",
+            "label": "Minimum needed daily changes"
+        },
+        {
+            "type": "NumberSpinner",
+            "name": "RequiredSwitchCount",
+            "caption": "Count"
         }
     ]
-  },
-	{ "type": "Label", "label": "Minimum needed daily changes" },
-	{ "type": "NumberSpinner", "name": "RequiredSwitchCount", "caption": "Count" }
-  ]
 }
