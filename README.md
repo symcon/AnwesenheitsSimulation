@@ -6,5 +6,5 @@
 
 Folgende Module beinhaltet das AnwesenheitsSimulation Repository:
 
-- __Anwesenheits-Simulation__ ([Dokumentation](AnwesenheitsSimulation))  
+- __Anwesenheits-Simulation__ ([Dokumentation](https://www.symcon.de/de/service/dokumentation/modulreferenz/anwesenheitssimulation))  
 	Simuliert die Anwesenheit von Personen im Haushalt.
