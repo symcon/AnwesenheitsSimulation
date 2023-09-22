@@ -354,7 +354,7 @@ class AnwesenheitsSimulation extends IPSModule
                 //Only update if target differs
                 if ($targetValue != $v['VariableValue']) {
                     $o = IPS_GetObject($targetID);
-                    if ($v['VariableCustomAction'] != '') {
+                    if ($v['VariableCustomAction'] !== 0) {
                         $actionID = $v['VariableCustomAction'];
                     } else {
                         $actionID = $v['VariableAction'];
