@@ -154,20 +154,6 @@ class AnwesenheitsSimulation extends IPSModule
 
         $this->SetValue('Active', $SwitchOn);
     }
-    //If the the variable has a name we use it
-    private function GetName($VariableID)
-    {
-        $targets = json_decode($this->ReadPropertyString('Targets'), true);
-        foreach ($targets as $target) {
-            if (($target['VariableID'] == $VariableID) && IPS_VariableExists($target['VariableID'])) {
-                if (!isset($target['Name']) || $target['Name'] == '') {
-                    return IPS_GetName($VariableID);
-                } else {
-                    return $target['Name'];
-                }
-            }
-        }
-    }
 
     public function RequestAction($Ident, $Value)
     {
@@ -178,80 +164,6 @@ class AnwesenheitsSimulation extends IPSModule
             default:
                 throw new Exception('Invalid ident');
         }
-    }
-
-    //Returns all variableIDs in list
-    private function GetTargets()
-    {
-        $targets = json_decode($this->ReadPropertyString('Targets'), true);
-
-        $result = [];
-        foreach ($targets as $target) {
-            if (IPS_VariableExists($target['VariableID'])) {
-                $result[] = $target['VariableID'];
-            }
-        }
-        return $result;
-    }
-
-    //returns a array of the dayData of 1 Variable
-    private function GetDayData($day, $targetIDs)
-    {
-        $dayStart = mktime(0, 0, 0, intval(date('m', $this->getTime())), intval(date('d', $this->getTime())), intval(date('Y', $this->getTime())));
-        $dayDiff = $day * 24 * 3600;
-        $dayData = [];
-        $archiveControlID = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}')[0];
-
-        //Going through all variables
-        foreach ($targetIDs as $targetID) {
-            if (AC_GetLoggingStatus($archiveControlID, $targetID)) {
-                //Fetch Data for all variables but only one day
-                $values = AC_GetLoggedValues($archiveControlID, $targetID, $dayStart - $dayDiff, $dayStart + (24 * 3600) - $dayDiff - 1, 0);
-                if (count($values) > 0) {
-
-                    //Transform UnixTimeStamp into human readable value
-                    foreach ($values as $key => $value) {
-                        $values[$key]['TimeStamp'] = date('H:i:s', $value['TimeStamp']);
-                    }
-
-                    //Reverse array to have the Timestamps ascending
-                    $dayData[$targetID] = array_reverse($values);
-                }
-            }
-        }
-
-        // return all values for listed variables for one day in a array
-        return ['Date' => date('d.m.Y', $dayStart - $dayDiff), 'Data' => $dayData];
-    }
-
-    //returns a array of all listed variables for 1 day and checks if this meets the needed switchcount
-    private function GetDataArray($days, $targetIDs)
-    {
-
-        //Get the dayData for all variables
-        foreach ($days as $day) {
-            $data = $this->GetDayData($day, $targetIDs);
-
-            $this->SendDebug('Fetch', 'Fetched day -' . $day . ' with ' . count($data['Data']) . ' valid device(s)', 0);
-
-            if (count($data['Data']) > 0) {
-
-                //Sum up the switchCount
-                $switchCounts = 0;
-                foreach ($data['Data'] as $value) {
-                    $switchCounts += count($value);
-                }
-
-                $this->SendDebug('Fetch', '> Required entropy of ' . ($this->ReadPropertyInteger('RequiredSwitchCount') * count($targetIDs)) . '. Have ' . $switchCounts, 0);
-
-                //Check if the needed switchCount requierement is meet
-                if ($switchCounts >= ($this->ReadPropertyInteger('RequiredSwitchCount') * count($targetIDs))) {
-                    return $data;
-                }
-            }
-        }
-
-        return [];
     }
 
     //Fetches the needed SimulationData for a whole day
@@ -377,6 +289,94 @@ class AnwesenheitsSimulation extends IPSModule
             $this->SetTimerInterval('UpdateTargetsTimer', 0);
         }
         $this->SetTimerInterval('MidnightTimer', 1000 * (strtotime('tomorrow', $this->getTime()) - $this->getTime()));
+    }
+    //If the the variable has a name we use it
+    private function GetName($VariableID)
+    {
+        $targets = json_decode($this->ReadPropertyString('Targets'), true);
+        foreach ($targets as $target) {
+            if (($target['VariableID'] == $VariableID) && IPS_VariableExists($target['VariableID'])) {
+                if (!isset($target['Name']) || $target['Name'] == '') {
+                    return IPS_GetName($VariableID);
+                } else {
+                    return $target['Name'];
+                }
+            }
+        }
+    }
+
+    //Returns all variableIDs in list
+    private function GetTargets()
+    {
+        $targets = json_decode($this->ReadPropertyString('Targets'), true);
+
+        $result = [];
+        foreach ($targets as $target) {
+            if (IPS_VariableExists($target['VariableID'])) {
+                $result[] = $target['VariableID'];
+            }
+        }
+        return $result;
+    }
+
+    //returns a array of the dayData of 1 Variable
+    private function GetDayData($day, $targetIDs)
+    {
+        $dayStart = mktime(0, 0, 0, intval(date('m', $this->getTime())), intval(date('d', $this->getTime())), intval(date('Y', $this->getTime())));
+        $dayDiff = $day * 24 * 3600;
+        $dayData = [];
+        $archiveControlID = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}')[0];
+
+        //Going through all variables
+        foreach ($targetIDs as $targetID) {
+            if (AC_GetLoggingStatus($archiveControlID, $targetID)) {
+                //Fetch Data for all variables but only one day
+                $values = AC_GetLoggedValues($archiveControlID, $targetID, $dayStart - $dayDiff, $dayStart + (24 * 3600) - $dayDiff - 1, 0);
+                if (count($values) > 0) {
+
+                    //Transform UnixTimeStamp into human readable value
+                    foreach ($values as $key => $value) {
+                        $values[$key]['TimeStamp'] = date('H:i:s', $value['TimeStamp']);
+                    }
+
+                    //Reverse array to have the Timestamps ascending
+                    $dayData[$targetID] = array_reverse($values);
+                }
+            }
+        }
+
+        // return all values for listed variables for one day in a array
+        return ['Date' => date('d.m.Y', $dayStart - $dayDiff), 'Data' => $dayData];
+    }
+
+    //returns a array of all listed variables for 1 day and checks if this meets the needed switchcount
+    private function GetDataArray($days, $targetIDs)
+    {
+
+        //Get the dayData for all variables
+        foreach ($days as $day) {
+            $data = $this->GetDayData($day, $targetIDs);
+
+            $this->SendDebug('Fetch', 'Fetched day -' . $day . ' with ' . count($data['Data']) . ' valid device(s)', 0);
+
+            if (count($data['Data']) > 0) {
+
+                //Sum up the switchCount
+                $switchCounts = 0;
+                foreach ($data['Data'] as $value) {
+                    $switchCounts += count($value);
+                }
+
+                $this->SendDebug('Fetch', '> Required entropy of ' . ($this->ReadPropertyInteger('RequiredSwitchCount') * count($targetIDs)) . '. Have ' . $switchCounts, 0);
+
+                //Check if the needed switchCount requierement is meet
+                if ($switchCounts >= ($this->ReadPropertyInteger('RequiredSwitchCount') * count($targetIDs))) {
+                    return $data;
+                }
+            }
+        }
+
+        return [];
     }
 
     private function UpdateView($targetIDs, $nextSimulationData)

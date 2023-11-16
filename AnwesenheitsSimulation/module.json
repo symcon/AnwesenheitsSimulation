@@ -3,8 +3,7 @@
     "name": "AnwesenheitsSimulation",
     "type": 3,
     "vendor": "",
-    "aliases": 
-    [
+    "aliases": [
         "AnwesenheitsSimulation"
     ],
     "parentRequirements": [],

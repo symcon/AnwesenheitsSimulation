@@ -7,11 +7,6 @@ if (defined('PHPUNIT_TESTSUITE')) {
     {
         private $currentTime = 989884800;
 
-        protected function getTime()
-        {
-            return $this->currentTime;
-        }
-
         public function setTime(int $Time)
         {
             $this->currentTime = $Time;
@@ -20,6 +15,11 @@ if (defined('PHPUNIT_TESTSUITE')) {
         public function GetTimerInterval(string $Ident)
         {
             return parent::GetTimerInterval($Ident);
+        }
+
+        protected function getTime()
+        {
+            return $this->currentTime;
         }
     }
 } else {
