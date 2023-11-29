@@ -19,7 +19,9 @@
             "Not enough data!": "Zu wenig Daten!",
             "No Action": "Keine Aktion",
             "No Logging": "Nicht geloggt",
-            "Doesn't Exist": "Existiert nicht"
+            "Doesn't Exist": "Existiert nicht",
+            "PresenceSimulation": "AnwesenheitsSimulation",
+            "https://www.symcon.de/en/service/documentation/module-reference/presence-simulation/": "https://www.symcon.de/de/service/dokumentation/modulreferenz/anwesenheitssimulation/"
         }
     }
 }
