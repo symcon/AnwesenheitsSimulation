@@ -1,14 +1,14 @@
 {
     "id": "{87F47896-DD54-442D-94FD-9990BD8D9F54}",
-    "name": "AnwesenheitsSimulation",
+    "name": "PresenceSimulation",
     "type": 3,
     "vendor": "",
     "aliases": [
-        "AnwesenheitsSimulation"
+        "PresenceSimulation"
     ],
     "parentRequirements": [],
     "childRequirements": [],
     "implemented": [],
     "prefix": "AS",
-    "url": "https://github.com/symcon/AnwesenheitsSimulation/tree/master/AnwesenheitsSimulation"
+    "url": "https://www.symcon.de/en/service/documentation/module-reference/presence-simulation/"
 }

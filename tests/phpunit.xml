@@ -6,7 +6,7 @@
   </php>
   <source>
     <include>
-      <directory suffix=".php">../AnwesenheitsSimulation</directory>
+      <directory suffix=".php">../PresenceSimulation</directory>
     </include>
   </source>
 </phpunit>

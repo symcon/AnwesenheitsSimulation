@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 include_once __DIR__ . '/timetest.php';
-class AnwesenheitsSimulation extends IPSModule
+class PresenceSimulation extends IPSModule
 {
     use TestTime;
     public function Create()

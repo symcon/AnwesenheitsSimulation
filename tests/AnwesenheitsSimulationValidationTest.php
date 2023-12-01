@@ -8,8 +8,8 @@ class AnwesenheitsSimulationValidationTest extends TestCaseSymconValidation
     {
         $this->validateLibrary(__DIR__ . '/..');
     }
-    public function testValidateAnwesenheitsSimulationModule(): void
+    public function testValidatePresenceSimulationModule(): void
     {
-        $this->validateModule(__DIR__ . '/../AnwesenheitsSimulation');
+        $this->validateModule(__DIR__ . '/../PresenceSimulation');
     }
 }
