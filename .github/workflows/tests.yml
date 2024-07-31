@@ -1,6 +1,6 @@
 name: Run Tests
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
 
@@ -12,7 +12,7 @@ jobs:
         with:
           submodules: true
       - name: Run tests 
-        uses: symcon/action-tests@master
+        uses: symcon/action-tests@feature/add-static-version
 
   test-legacy:
     runs-on: ubuntu-latest
@@ -21,11 +21,8 @@ jobs:
         uses: actions/checkout@master
         with:
           submodules: true
-      - name: Install required PHP version
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.3' #This version is currently used by Symcon | In later versions the tested wddx function is removed
       - name: Run tests 
-        uses: symcon/action-tests@master
+        uses: symcon/action-tests@feature/add-static-version
         with:
           phpunit-version: '9.2.6'
+          php-version: '7.3'
