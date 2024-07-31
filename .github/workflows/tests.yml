@@ -12,7 +12,7 @@ jobs:
         with:
           submodules: true
       - name: Run tests 
-        uses: symcon/action-tests@feature/add-static-version
+        uses: symcon/action-tests@master
 
   test-legacy:
     runs-on: ubuntu-latest
@@ -22,7 +22,7 @@ jobs:
         with:
           submodules: true
       - name: Run tests 
-        uses: symcon/action-tests@feature/add-static-version
+        uses: symcon/action-tests@master
         with:
           phpunit-version: '9.2.6'
           php-version: '7.3'
