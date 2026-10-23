@@ -5,6 +5,7 @@
             "name": "Targets",
             "caption": "Variables",
             "add": true,
+            "multiAdd": true,
             "delete": true,
             "columns": [
                 {
